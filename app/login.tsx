@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Button, Alert, ActivityIndicator } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
+import { router } from "expo-router";
 import { useAuth } from "../src/store/AuthContext";
 import { AuthRequestDTO } from "../src/types";
 
@@ -91,7 +92,10 @@ export default function LoginScreen() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Login" onPress={handleSubmit(onSubmit)} />
+        <View style={{ gap: 10 }}>
+          <Button title="Login" onPress={handleSubmit(onSubmit)} />
+          <Button title="Register" onPress={() => router.push("/register")} color="#666" />
+        </View>
       )}
     </View>
   );
