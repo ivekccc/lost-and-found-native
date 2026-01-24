@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import http from '../../src/api/http';
+import { useAuth } from '../../src/store/AuthContext';
 
 export default function HomeScreen() {
   const [secretMessage, setSecretMessage] = useState<string | null>(null);
+  const { logout } = useAuth();
 
   const fetchSecret = async () => {
     try {
@@ -14,6 +16,10 @@ export default function HomeScreen() {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
@@ -21,6 +27,9 @@ export default function HomeScreen() {
       {secretMessage && (
         <Text style={styles.secret}>{secretMessage}</Text>
       )}
+      <View style={styles.logoutContainer}>
+        <Button title="Logout" onPress={handleLogout} color="#ff4444" />
+      </View>
     </View>
   );
 }
@@ -40,5 +49,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: '#333',
+  },
+  logoutContainer: {
+    marginTop: 40,
   },
 });
