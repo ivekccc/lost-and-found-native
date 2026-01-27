@@ -8,6 +8,7 @@ interface ButtonProps {
   variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
+  accessibilityLabel?: string;
 }
 
 const variantStyles: Record<ButtonVariant, { container: string; text: string }> = {
@@ -31,6 +32,7 @@ export function Button({
   variant = "primary",
   loading = false,
   disabled = false,
+  accessibilityLabel,
 }: ButtonProps) {
   const styles = variantStyles[variant];
   const isDisabled = disabled || loading;
@@ -40,6 +42,9 @@ export function Button({
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.8}
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
       className={`
         rounded-lg py-4 items-center justify-center
         ${styles.container}

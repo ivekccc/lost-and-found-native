@@ -52,3 +52,23 @@ export const COMMON_STRINGS = {
   CANCEL: "Cancel",
   OK: "OK",
 } as const;
+
+// ===========================================
+// ACCESSIBILITY STRINGS
+// ===========================================
+
+export const A11Y_STRINGS = {
+  // Login
+  EMAIL_INPUT: "Enter your email address",
+  PASSWORD_INPUT: "Enter your password",
+  LOGIN_BUTTON: "Sign in to your account",
+  GO_TO_REGISTER: "Go to registration page",
+
+  // Register
+  FIRST_NAME_INPUT: "Enter your first name",
+  LAST_NAME_INPUT: "Enter your last name",
+  USERNAME_INPUT: "Choose a username",
+  PHONE_INPUT: "Enter your phone number, optional",
+  REGISTER_BUTTON: "Create your account",
+  GO_TO_LOGIN: "Go back to login page",
+} as const;
