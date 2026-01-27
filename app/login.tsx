@@ -1,14 +1,17 @@
-import { View, Text, TextInput, Button, Alert, ActivityIndicator } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import { View, Text, Alert, KeyboardAvoidingView, Platform } from "react-native";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
 import { useAuth } from "../src/store/AuthContext";
 import { AuthRequestDTO } from "../src/types";
+import { FormInput } from "../src/components/forms";
+import { Button } from "../src/components/ui";
+import { AUTH_STRINGS, COMMON_STRINGS, VALIDATION_RULES } from "../src/constants";
 
 export default function LoginScreen() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const { control, handleSubmit, formState: { errors } } = useForm<AuthRequestDTO>();
+  const { control, handleSubmit } = useForm<AuthRequestDTO>();
 
   const onSubmit = async (data: AuthRequestDTO) => {
     setLoading(true);
@@ -16,8 +19,8 @@ export default function LoginScreen() {
       await login(data);
     } catch (error: any) {
       Alert.alert(
-        "Error",
-        error.response?.data?.message || error.message || "Login failed"
+        COMMON_STRINGS.ERROR_TITLE,
+        error.response?.data?.message || error.message || AUTH_STRINGS.LOGIN_ERROR
       );
     } finally {
       setLoading(false);
@@ -25,78 +28,47 @@ export default function LoginScreen() {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        padding: 20,
-        backgroundColor: "#fff",
-      }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      className="flex-1"
     >
-      <Text style={{ fontSize: 24, marginBottom: 20, color: "#000" }}>
-        Login
-      </Text>
+      <View className="flex-1 justify-center px-6 bg-background">
+        <Text className="text-3xl font-bold text-text-primary mb-8">
+          {AUTH_STRINGS.LOGIN_TITLE}
+        </Text>
 
-      <Controller
-        control={control}
-        name="email"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#999"
-            onChangeText={onChange}
-            value={value}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            style={{
-              borderWidth: 1,
-              borderColor: "#ccc",
-              padding: 10,
-              marginBottom: 10,
-              color: "#000",
-            }}
+        <FormInput
+          control={control}
+          name="email"
+          placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
+          rules={VALIDATION_RULES.email}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+        />
+
+        <FormInput
+          control={control}
+          name="password"
+          placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
+          rules={VALIDATION_RULES.password}
+          secureTextEntry
+          autoComplete="password"
+        />
+
+        <View className="gap-3 mt-4">
+          <Button
+            title={AUTH_STRINGS.LOGIN_BUTTON}
+            onPress={handleSubmit(onSubmit)}
+            loading={loading}
           />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="password"
-        rules={{ required: true }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#999"
-            onChangeText={onChange}
-            value={value}
-            secureTextEntry
-            style={{
-              borderWidth: 1,
-              borderColor: "#ccc",
-              padding: 10,
-              marginBottom: 20,
-              color: "#000",
-            }}
+          <Button
+            title={AUTH_STRINGS.REGISTER_BUTTON}
+            onPress={() => router.push("/register")}
+            variant="outline"
           />
-        )}
-      />
-
-      {errors.email && (
-        <Text style={{ color: "red", marginBottom: 5 }}>Email is required</Text>
-      )}
-      {errors.password && (
-        <Text style={{ color: "red", marginBottom: 5 }}>Password is required</Text>
-      )}
-
-      {loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <View style={{ gap: 10 }}>
-          <Button title="Login" onPress={handleSubmit(onSubmit)} />
-          <Button title="Register" onPress={() => router.push("/register")} color="#666" />
         </View>
-      )}
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
