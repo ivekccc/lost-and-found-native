@@ -11,31 +11,27 @@ import {
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { authApi } from "../src/api/auth.api";
+import { useAuth } from "../src/store/AuthContext";
 import { RegisterRequestDTO } from "../src/types";
 import { FormInput } from "../src/components/forms";
 import { Button } from "../src/components/ui";
 import { AUTH_STRINGS, COMMON_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
 
 export default function RegisterScreen() {
+  const { register: registerUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<RegisterRequestDTO>();
 
   const onSubmit = async (data: RegisterRequestDTO) => {
     setLoading(true);
     try {
-      const response = await authApi.register(data);
-      if (response.data.token && response.data.refreshToken) {
-        await AsyncStorage.setItem("authToken", response.data.token);
-        await AsyncStorage.setItem("refreshToken", response.data.refreshToken);
-      }
-      router.replace("/(tabs)");
-    } catch (error: any) {
-      Alert.alert(
-        COMMON_STRINGS.ERROR_TITLE,
-        error.response?.data?.message || error.message || AUTH_STRINGS.REGISTER_ERROR
-      );
+      await registerUser(data);
+    } catch (error: unknown) {
+      const message = error instanceof Error
+        ? error.message
+        : AUTH_STRINGS.REGISTER_ERROR;
+
+      Alert.alert(COMMON_STRINGS.ERROR_TITLE, message);
     } finally {
       setLoading(false);
     }

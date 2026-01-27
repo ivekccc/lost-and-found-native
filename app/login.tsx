@@ -25,11 +25,12 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(data);
-    } catch (error: any) {
-      Alert.alert(
-        COMMON_STRINGS.ERROR_TITLE,
-        error.response?.data?.message || error.message || AUTH_STRINGS.LOGIN_ERROR
-      );
+    } catch (error: unknown) {
+      const message = error instanceof Error
+        ? error.message
+        : AUTH_STRINGS.LOGIN_ERROR;
+
+      Alert.alert(COMMON_STRINGS.ERROR_TITLE, message);
     } finally {
       setLoading(false);
     }

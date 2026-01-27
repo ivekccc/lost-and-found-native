@@ -1,5 +1,5 @@
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { tokenService } from "../services";
 
 const API_BASE_URL = "http://localhost:8082";
 
@@ -12,48 +12,58 @@ const http = axios.create({
 
 http.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem("authToken");
+    const token = await tokenService.getAccessToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
-let isRefreshing = false;
-let failedQueue: any[] = [];
+interface QueuedRequest {
+  resolve: (token: string) => void;
+  reject: (error: Error) => void;
+}
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
+let isRefreshing = false;
+let failedQueue: QueuedRequest[] = [];
+
+const processQueue = (error: Error | null, token: string | null = null): void => {
+  failedQueue.forEach((request) => {
     if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
+      request.reject(error);
+    } else if (token) {
+      request.resolve(token);
     }
   });
   failedQueue = [];
 };
 
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
+
 http.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableRequestConfig;
     const status = error.response?.status;
 
     if ((status === 401 || status === 403) && !originalRequest._retry) {
-      const refreshToken = await AsyncStorage.getItem("refreshToken");
+      const refreshToken = await tokenService.getRefreshToken();
 
       if (!refreshToken) {
+        await tokenService.clearTokens();
         return Promise.reject(error);
       }
 
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers["Authorization"] = "Bearer " + token;
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
             return http(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -63,30 +73,32 @@ http.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refreshToken,
         });
-        await AsyncStorage.setItem("authToken", res.data.accessToken);
-        if (res.data.refreshToken) {
-          await AsyncStorage.setItem("refreshToken", res.data.refreshToken);
+
+        const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+        await tokenService.updateAccessToken(accessToken);
+        if (newRefreshToken) {
+          await tokenService.updateRefreshToken(newRefreshToken);
         }
-        http.defaults.headers.common["Authorization"] =
-          "Bearer " + res.data.accessToken;
-        processQueue(null, res.data.accessToken);
-        originalRequest.headers["Authorization"] =
-          "Bearer " + res.data.accessToken;
+
+        http.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+        processQueue(null, accessToken);
+        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
         return http(originalRequest);
-      } catch (err) {
-        processQueue(err, null);
-        await AsyncStorage.removeItem("authToken");
-        await AsyncStorage.removeItem("refreshToken");
-        return Promise.reject(err);
+      } catch (refreshError) {
+        processQueue(refreshError as Error, null);
+        await tokenService.clearTokens();
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
-  },
+  }
 );
 
 export default http;

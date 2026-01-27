@@ -3,16 +3,18 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useCallback,
   ReactNode,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApi } from "../api/auth.api";
-import { AuthRequestDTO, AuthResponseDTO } from "../types";
+import { tokenService } from "../services";
+import { AuthRequestDTO, AuthResponseDTO, RegisterRequestDTO } from "../types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (data: AuthRequestDTO) => Promise<AuthResponseDTO>;
+  register: (data: RegisterRequestDTO) => Promise<AuthResponseDTO>;
   logout: () => Promise<void>;
 }
 
@@ -23,39 +25,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const hasTokens = await tokenService.hasTokens();
+        setIsAuthenticated(hasTokens);
+      } catch {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     checkAuth();
   }, []);
 
-  const checkAuth = async () => {
-    try {
-      const token = await AsyncStorage.getItem("authToken");
-      setIsAuthenticated(!!token);
-    } catch {
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    const unsubscribe = tokenService.subscribe((authState) => {
+      setIsAuthenticated(authState);
+    });
 
-  const login = async (data: AuthRequestDTO): Promise<AuthResponseDTO> => {
+    return unsubscribe;
+  }, []);
+
+  const login = useCallback(async (data: AuthRequestDTO): Promise<AuthResponseDTO> => {
     const response = await authApi.login(data);
     const result = response.data;
+    const success = await tokenService.setTokens(result.token, result.refreshToken);
 
-    await AsyncStorage.setItem("authToken", result.token!);
-    await AsyncStorage.setItem("refreshToken", result.refreshToken!);
-    setIsAuthenticated(true);
+    if (!success) {
+      throw new Error("Failed to save authentication tokens");
+    }
 
     return result;
-  };
+  }, []);
 
-  const logout = async () => {
-    await AsyncStorage.removeItem("authToken");
-    await AsyncStorage.removeItem("refreshToken");
-    setIsAuthenticated(false);
-  };
+  const register = useCallback(async (data: RegisterRequestDTO): Promise<AuthResponseDTO> => {
+    const response = await authApi.register(data);
+    const result = response.data;
+    const success = await tokenService.setTokens(result.token, result.refreshToken);
+
+    if (!success) {
+      throw new Error("Failed to save authentication tokens");
+    }
+
+    return result;
+  }, []);
+
+  const logout = useCallback(async () => {
+    await tokenService.clearTokens();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
