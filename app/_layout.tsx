@@ -4,10 +4,12 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '../src/store/AuthContext';
+import { toastConfig } from '../src/components/toast';
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -44,6 +46,7 @@ function RootLayoutNav() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
+      <Toast config={toastConfig} />
     </ThemeProvider>
   );
 }

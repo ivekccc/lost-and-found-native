@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
@@ -15,6 +14,7 @@ import { AuthRequestDTO } from "../src/types";
 import { FormInput } from "../src/components/forms";
 import { Button } from "../src/components/ui";
 import { AUTH_STRINGS, COMMON_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
+import { toastService } from "../src/services";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -30,7 +30,7 @@ export default function LoginScreen() {
         ? error.message
         : AUTH_STRINGS.LOGIN_ERROR;
 
-      Alert.alert(COMMON_STRINGS.ERROR_TITLE, message);
+      toastService.error(COMMON_STRINGS.ERROR_TITLE, message);
     } finally {
       setLoading(false);
     }
