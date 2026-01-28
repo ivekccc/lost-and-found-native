@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { View, Text } from 'react-native';
 import http from '../../src/api/http';
 import { useAuth } from '../../src/store/AuthContext';
+import { useMessage } from '../../src/store/MessageContext';
 import { Button } from '../../src/components/ui';
-import { toastService, confirmService } from '../../src/services';
+import { toastService } from '../../src/services';
 
 export default function HomeScreen() {
   const [secretMessage, setSecretMessage] = useState<string | null>(null);
   const { logout } = useAuth();
+  const { confirm } = useMessage();
 
   const fetchSecret = async () => {
     try {
@@ -20,7 +22,12 @@ export default function HomeScreen() {
   };
 
   const handleLogout = async () => {
-    const confirmed = await confirmService.yesNo('Logout', 'Are you sure you want to logout?');
+    const confirmed = await confirm({
+      title: 'Logout',
+      message: 'Are you sure you want to logout?',
+      confirmText: 'Yes',
+      cancelText: 'No',
+    });
     if (confirmed) {
       await logout();
     }
@@ -29,17 +36,6 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 justify-center items-center p-5 bg-background">
       <Text className="text-2xl font-bold text-text-primary mb-5">Home</Text>
-
-      <View className="w-full gap-3 mb-8">
-        <Button
-          title="Confirm Dialog"
-          onPress={async () => {
-            const result = await confirmService.delete('Delete Item', 'Are you sure you want to delete this item?');
-            toastService.info('Result', result ? 'Confirmed' : 'Cancelled');
-          }}
-          variant="outline"
-        />
-      </View>
 
       <View className="w-full gap-3 mb-8">
         <Text className="text-lg font-semibold text-text-primary mb-2">Toast Demo</Text>

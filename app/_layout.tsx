@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider, useAuth } from '../src/store/AuthContext';
+import { MessageProvider } from '../src/store/MessageContext';
 import { toastConfig } from '../src/components/toast';
 
 function RootLayoutNav() {
@@ -54,7 +55,9 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <MessageProvider>
+        <RootLayoutNav />
+      </MessageProvider>
     </AuthProvider>
   );
 }
