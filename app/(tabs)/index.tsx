@@ -20,7 +20,10 @@ export default function HomeScreen() {
   };
 
   const handleLogout = async () => {
-    await logout();
+    const confirmed = await confirmService.yesNo('Logout', 'Are you sure you want to logout?');
+    if (confirmed) {
+      await logout();
+    }
   };
 
   return (
