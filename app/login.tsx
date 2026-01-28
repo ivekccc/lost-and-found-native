@@ -13,8 +13,7 @@ import { useAuth } from "../src/store/AuthContext";
 import { AuthRequestDTO } from "../src/types";
 import { FormInput } from "../src/components/forms";
 import { Button } from "../src/components/ui";
-import { AUTH_STRINGS, COMMON_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
-import { toastService } from "../src/services";
+import { AUTH_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -25,12 +24,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(data);
-    } catch (error: unknown) {
-      const message = error instanceof Error
-        ? error.message
-        : AUTH_STRINGS.LOGIN_ERROR;
-
-      toastService.error(COMMON_STRINGS.ERROR_TITLE, message);
+    } catch {
     } finally {
       setLoading(false);
     }

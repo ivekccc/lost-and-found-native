@@ -1,26 +1,15 @@
-// ===========================================
-// AUTH STRINGS
-// ===========================================
-
 export const AUTH_STRINGS = {
-  // Labels
   LOGIN_TITLE: "Login",
   REGISTER_TITLE: "Register",
-
-  // Placeholders
   EMAIL_PLACEHOLDER: "Email",
   PASSWORD_PLACEHOLDER: "Password",
   FIRST_NAME_PLACEHOLDER: "First Name",
   LAST_NAME_PLACEHOLDER: "Last Name",
   USERNAME_PLACEHOLDER: "Username",
   PHONE_PLACEHOLDER: "Phone Number (optional)",
-
-  // Buttons
   LOGIN_BUTTON: "Login",
   REGISTER_BUTTON: "Register",
   LOGOUT_BUTTON: "Logout",
-
-  // Validation errors
   EMAIL_REQUIRED: "Email is required",
   EMAIL_INVALID: "Invalid email format",
   PASSWORD_REQUIRED: "Password is required",
@@ -29,23 +18,16 @@ export const AUTH_STRINGS = {
   LAST_NAME_REQUIRED: "Last name is required",
   USERNAME_REQUIRED: "Username is required",
   USERNAME_MIN_LENGTH: "Username must be at least 3 characters",
-
-  // API messages
   LOGIN_ERROR: "Login failed",
   REGISTER_ERROR: "Registration failed",
   GENERIC_ERROR: "An error occurred",
-
-  // Links
   NO_ACCOUNT: "Don't have an account?",
   HAVE_ACCOUNT: "Already have an account?",
 } as const;
 
-// ===========================================
-// COMMON STRINGS
-// ===========================================
-
 export const COMMON_STRINGS = {
   ERROR_TITLE: "Error",
+  ERROR_GENERIC: "Something went wrong",
   SUCCESS_TITLE: "Success",
   LOADING: "Loading...",
   RETRY: "Retry",
@@ -53,18 +35,11 @@ export const COMMON_STRINGS = {
   OK: "OK",
 } as const;
 
-// ===========================================
-// ACCESSIBILITY STRINGS
-// ===========================================
-
 export const A11Y_STRINGS = {
-  // Login
   EMAIL_INPUT: "Enter your email address",
   PASSWORD_INPUT: "Enter your password",
   LOGIN_BUTTON: "Sign in to your account",
   GO_TO_REGISTER: "Go to registration page",
-
-  // Register
   FIRST_NAME_INPUT: "Enter your first name",
   LAST_NAME_INPUT: "Enter your last name",
   USERNAME_INPUT: "Choose a username",

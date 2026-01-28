@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { tokenService } from "../services";
+import { tokenService, toastService } from "../services";
+import { COMMON_STRINGS } from "../constants";
 
 const API_BASE_URL = "http://localhost:8082";
 
@@ -42,18 +43,40 @@ const processQueue = (error: Error | null, token: string | null = null): void =>
 
 interface RetryableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
+  _silent?: boolean;
 }
+
+interface ApiErrorResponse {
+  message?: string;
+  error?: string;
+  status?: number;
+}
+
+const showErrorToast = (error: AxiosError<ApiErrorResponse>): void => {
+  const message =
+    error.response?.data?.message ||
+    error.response?.data?.error ||
+    error.message ||
+    COMMON_STRINGS.ERROR_GENERIC;
+
+  toastService.error(COMMON_STRINGS.ERROR_TITLE, message);
+};
 
 http.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  async (error: AxiosError<ApiErrorResponse>) => {
     const originalRequest = error.config as RetryableRequestConfig;
     const status = error.response?.status;
+    const isSilent = originalRequest?._silent;
+    const isAuthError = status === 401 || status === 403;
 
-    if ((status === 401 || status === 403) && !originalRequest._retry) {
+    if (isAuthError && !originalRequest._retry) {
       const refreshToken = await tokenService.getRefreshToken();
 
       if (!refreshToken) {
+        if (!isSilent) {
+          showErrorToast(error);
+        }
         await tokenService.clearTokens();
         return Promise.reject(error);
       }
@@ -89,12 +112,19 @@ http.interceptors.response.use(
         originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
+        if (!isSilent) {
+          showErrorToast(error);
+        }
         processQueue(refreshError as Error, null);
         await tokenService.clearTokens();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
+    }
+
+    if (!isSilent) {
+      showErrorToast(error);
     }
 
     return Promise.reject(error);
