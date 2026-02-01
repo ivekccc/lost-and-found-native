@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
-import http from '../../src/api/http';
+import { api } from '../../src/api';
 import { useAuth } from '../../src/store/AuthContext';
 import { useMessage } from '../../src/store/MessageContext';
 import { Button } from '../../src/components/ui';
@@ -13,7 +13,7 @@ export default function HomeScreen() {
 
   const fetchSecret = async () => {
     try {
-      const response = await http.get<string>('/secret');
+      const response = await api.test.secret();
       setSecretMessage(response.data);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
