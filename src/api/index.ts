@@ -1,2 +1,2 @@
 export { default as http } from './http';
-export { api } from './api';
+export { authApi } from './auth.api';
