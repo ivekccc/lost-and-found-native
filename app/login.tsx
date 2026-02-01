@@ -10,7 +10,8 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
 import { useAuth } from "../src/store/AuthContext";
-import { AuthRequestDTO } from "../src/types";
+import { AuthRequestDTO } from "@lost-and-found/api";
+
 import { FormInput } from "../src/components/forms";
 import { Button } from "../src/components/ui";
 import { AUTH_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";

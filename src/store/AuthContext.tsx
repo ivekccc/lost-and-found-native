@@ -6,9 +6,9 @@ import React, {
   useCallback,
   ReactNode,
 } from "react";
-import { authApi } from "../api/auth.api";
+import { api } from "../api";
 import { tokenService } from "../services";
-import { AuthRequestDTO, AuthResponseDTO, RegisterRequestDTO } from "../types";
+import { AuthRequestDTO, AuthResponseDTO, RegisterRequestDTO } from "@lost-and-found/api";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (data: AuthRequestDTO): Promise<AuthResponseDTO> => {
-    const response = await authApi.login(data);
+    const response = await api.auth.login(data);
     const result = response.data;
     const success = await tokenService.setTokens(result.token, result.refreshToken);
 
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async (data: RegisterRequestDTO): Promise<AuthResponseDTO> => {
-    const response = await authApi.register(data);
+    const response = await api.auth.register(data);
     const result = response.data;
     const success = await tokenService.setTokens(result.token, result.refreshToken);
 
