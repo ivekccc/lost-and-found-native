@@ -47,24 +47,6 @@ export default function RegisterScreen() {
 
           <FormInput
             control={control}
-            name="firstName"
-            placeholder={AUTH_STRINGS.FIRST_NAME_PLACEHOLDER}
-            rules={VALIDATION_RULES.firstName}
-            autoComplete="given-name"
-            accessibilityLabel={A11Y_STRINGS.FIRST_NAME_INPUT}
-          />
-
-          <FormInput
-            control={control}
-            name="lastName"
-            placeholder={AUTH_STRINGS.LAST_NAME_PLACEHOLDER}
-            rules={VALIDATION_RULES.lastName}
-            autoComplete="family-name"
-            accessibilityLabel={A11Y_STRINGS.LAST_NAME_INPUT}
-          />
-
-          <FormInput
-            control={control}
             name="email"
             placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
             rules={VALIDATION_RULES.email}
@@ -92,16 +74,6 @@ export default function RegisterScreen() {
             secureTextEntry
             autoComplete="new-password"
             accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
-          />
-
-          <FormInput
-            control={control}
-            name="phoneNumber"
-            placeholder={AUTH_STRINGS.PHONE_PLACEHOLDER}
-            rules={VALIDATION_RULES.phoneNumber}
-            keyboardType="phone-pad"
-            autoComplete="tel"
-            accessibilityLabel={A11Y_STRINGS.PHONE_INPUT}
           />
 
           <View className="gap-3 mt-4">
