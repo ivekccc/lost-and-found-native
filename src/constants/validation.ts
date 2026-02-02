@@ -1,4 +1,4 @@
-import { AUTH_STRINGS } from "./strings";
+import { AUTH_STRINGS, LEGAL_STRINGS } from "./strings";
 
 // ===========================================
 // REGEX PATTERNS
@@ -51,5 +51,9 @@ export const VALIDATION_RULES = {
       value: PATTERNS.PHONE,
       message: "Invalid phone number format",
     },
+  },
+
+  termsAccepted: {
+    required: LEGAL_STRINGS.TERMS_REQUIRED,
   },
 } as const;

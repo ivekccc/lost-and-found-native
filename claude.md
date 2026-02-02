@@ -8,7 +8,9 @@ LostAndFoundNative/
 │   ├── _layout.tsx                   # Root layout (AuthProvider, MessageProvider)
 │   ├── index.tsx                     # Redirect to /(tabs)
 │   ├── login.tsx                     # Login ekran
-│   ├── register.tsx                  # Register ekran
+│   ├── register.tsx                  # Register ekran + terms checkbox
+│   ├── terms.tsx                     # Terms of Service ekran
+│   ├── privacy.tsx                   # Privacy Policy ekran
 │   └── (tabs)/                       # Zaštićene rute
 │       ├── _layout.tsx               # Tab konfiguracija
 │       ├── index.tsx                 # Home
@@ -19,10 +21,14 @@ LostAndFoundNative/
 │   │   ├── auth.api.ts               # Auth API pozivi
 │   │   └── index.ts                  # Barrel export
 │   ├── components/
-│   │   ├── forms/FormInput.tsx       # RHF input wrapper
+│   │   ├── forms/
+│   │   │   ├── FormInput.tsx         # RHF input wrapper
+│   │   │   └── FormCheckbox.tsx      # RHF checkbox wrapper
 │   │   ├── ui/Button.tsx             # Button komponenta
 │   │   ├── modal/MessageModal.tsx    # Confirmation dialog
 │   │   └── toast/ToastConfig.tsx     # Toast stilovi
+│   ├── content/
+│   │   └── legal.ts                  # Terms & Privacy sadržaj
 │   ├── constants/
 │   │   ├── strings.ts                # UI tekstovi
 │   │   ├── validation.ts             # Validaciona pravila
@@ -174,7 +180,29 @@ export const VALIDATION_RULES = {
 1. Dodaj DTO tip u `@lost-and-found/api` paket
 2. Dodaj string konstante u `src/constants/strings.ts`
 3. Dodaj validaciju u `src/constants/validation.ts`
-4. Koristi `<FormInput>` sa pravilima
+4. Koristi `<FormInput>` ili `<FormCheckbox>` sa pravilima
+
+### FormCheckbox Komponenta
+
+Za boolean polja (checkboxes) koristi `FormCheckbox`:
+
+```typescript
+import { FormCheckbox } from "../src/components/forms";
+
+<FormCheckbox
+  control={control}
+  name="termsAccepted"
+  rules={VALIDATION_RULES.termsAccepted}
+  accessibilityLabel="Accept terms"
+>
+  <Text>
+    I agree to the{" "}
+    <Text className="text-primary underline" onPress={() => router.push("/terms")}>
+      Terms of Service
+    </Text>
+  </Text>
+</FormCheckbox>
+```
 
 ---
 
@@ -334,6 +362,16 @@ export const A11Y_STRINGS = {
   EMAIL_INPUT: "Email input field",
   PASSWORD_INPUT: "Password input field",
   // ...
+} as const;
+
+export const LEGAL_STRINGS = {
+  TERMS_TITLE: "Terms of Service",
+  PRIVACY_TITLE: "Privacy Policy",
+  TERMS_CHECKBOX_PREFIX: "By registering, I agree to the ",
+  TERMS_LINK: "Terms of Service",
+  AND: " and ",
+  PRIVACY_LINK: "Privacy Policy",
+  TERMS_REQUIRED: "You must accept the terms to continue",
 } as const;
 ```
 

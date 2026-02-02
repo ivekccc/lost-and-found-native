@@ -12,19 +12,29 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { useAuth } from "../src/store/AuthContext";
 import { RegisterRequestDTO } from "@lost-and-found/api";
-import { FormInput } from "../src/components/forms";
+import { FormInput, FormCheckbox } from "../src/components/forms";
 import { Button } from "../src/components/ui";
-import { AUTH_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
+import {
+  AUTH_STRINGS,
+  VALIDATION_RULES,
+  A11Y_STRINGS,
+  LEGAL_STRINGS,
+} from "../src/constants";
+
+interface RegisterFormData extends RegisterRequestDTO {
+  termsAccepted: boolean;
+}
 
 export default function RegisterScreen() {
   const { register: registerUser } = useAuth();
   const [loading, setLoading] = useState(false);
-  const { control, handleSubmit } = useForm<RegisterRequestDTO>();
+  const { control, handleSubmit } = useForm<RegisterFormData>();
 
-  const onSubmit = async (data: RegisterRequestDTO) => {
+  const onSubmit = async (data: RegisterFormData) => {
     setLoading(true);
     try {
-      await registerUser(data);
+      const { termsAccepted, ...registerData } = data;
+      await registerUser(registerData);
     } catch {
     } finally {
       setLoading(false);
@@ -76,7 +86,35 @@ export default function RegisterScreen() {
             accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
           />
 
-          <View className="gap-3 mt-4">
+          <FormCheckbox
+            control={control}
+            name="termsAccepted"
+            rules={VALIDATION_RULES.termsAccepted}
+            accessibilityLabel={A11Y_STRINGS.TERMS_CHECKBOX}
+          >
+            <Text className="text-sm text-text-secondary leading-5">
+              {LEGAL_STRINGS.TERMS_CHECKBOX_PREFIX}
+              <Text
+                className="text-primary underline"
+                onPress={() => router.push("/terms")}
+                accessibilityRole="link"
+                accessibilityLabel={A11Y_STRINGS.TERMS_LINK}
+              >
+                {LEGAL_STRINGS.TERMS_LINK}
+              </Text>
+              {LEGAL_STRINGS.AND}
+              <Text
+                className="text-primary underline"
+                onPress={() => router.push("/privacy")}
+                accessibilityRole="link"
+                accessibilityLabel={A11Y_STRINGS.PRIVACY_LINK}
+              >
+                {LEGAL_STRINGS.PRIVACY_LINK}
+              </Text>
+            </Text>
+          </FormCheckbox>
+
+          <View className="gap-3 mt-2">
             <Button
               title={AUTH_STRINGS.REGISTER_BUTTON}
               onPress={handleSubmit(onSubmit)}

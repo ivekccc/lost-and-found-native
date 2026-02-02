@@ -21,11 +21,13 @@ function RootLayoutNav() {
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === 'login' || segments[0] === 'register';
+    const publicRoutes = ['login', 'register', 'terms', 'privacy'];
+    const inPublicRoute = publicRoutes.includes(segments[0] as string);
+    const inAuthRoute = segments[0] === 'login' || segments[0] === 'register';
 
-    if (!isAuthenticated && !inAuthGroup) {
+    if (!isAuthenticated && !inPublicRoute) {
       router.replace('/login');
-    } else if (isAuthenticated && inAuthGroup) {
+    } else if (isAuthenticated && inAuthRoute) {
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, isLoading, segments]);
@@ -44,6 +46,8 @@ function RootLayoutNav() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="terms" options={{ title: "Terms of Service" }} />
+        <Stack.Screen name="privacy" options={{ title: "Privacy Policy" }} />
       </Stack>
       <StatusBar style="auto" />
       <Toast config={toastConfig} />

@@ -46,4 +46,18 @@ export const A11Y_STRINGS = {
   PHONE_INPUT: "Enter your phone number, optional",
   REGISTER_BUTTON: "Create your account",
   GO_TO_LOGIN: "Go back to login page",
+  TERMS_CHECKBOX: "Accept terms of service and privacy policy",
+  TERMS_LINK: "Open terms of service",
+  PRIVACY_LINK: "Open privacy policy",
+} as const;
+
+export const LEGAL_STRINGS = {
+  TERMS_TITLE: "Terms of Service",
+  PRIVACY_TITLE: "Privacy Policy",
+  TERMS_CHECKBOX_PREFIX: "By registering, I agree to the ",
+  TERMS_LINK: "Terms of Service",
+  AND: " and ",
+  PRIVACY_LINK: "Privacy Policy",
+  TERMS_REQUIRED: "You must accept the terms to continue",
+  LAST_UPDATED: "Last updated",
 } as const;
