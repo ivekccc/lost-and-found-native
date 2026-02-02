@@ -1,53 +1,44 @@
 import "../global.css";
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import Toast from 'react-native-toast-message';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import Toast from "react-native-toast-message";
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AuthProvider, useAuth } from '../src/store/AuthContext';
-import { MessageProvider } from '../src/store/MessageContext';
-import { toastConfig } from '../src/components/toast';
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAuthGuard } from "../src/hooks";
+import { AuthProvider } from "../src/store/AuthContext";
+import { MessageProvider } from "../src/store/MessageContext";
+import { toastConfig } from "../src/components/toast";
+import { FullScreenLoader } from "../src/components/ui";
+import { ROUTES, LEGAL_STRINGS } from "../src/constants";
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { isAuthenticated, isLoading } = useAuth();
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const publicRoutes = ['login', 'register', 'terms', 'privacy'];
-    const inPublicRoute = publicRoutes.includes(segments[0] as string);
-    const inAuthRoute = segments[0] === 'login' || segments[0] === 'register';
-
-    if (!isAuthenticated && !inPublicRoute) {
-      router.replace('/login');
-    } else if (isAuthenticated && inAuthRoute) {
-      router.replace('/(tabs)');
-    }
-  }, [isAuthenticated, isLoading, segments]);
+  const { isLoading } = useAuthGuard();
 
   if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <FullScreenLoader />;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="terms" options={{ title: "Terms of Service" }} />
-        <Stack.Screen name="privacy" options={{ title: "Privacy Policy" }} />
+        <Stack.Screen name={ROUTES.LOGIN} options={{ headerShown: false }} />
+        <Stack.Screen name={ROUTES.REGISTER} options={{ headerShown: false }} />
+        <Stack.Screen name={ROUTES.TABS} options={{ headerShown: false }} />
+        <Stack.Screen
+          name={ROUTES.TERMS}
+          options={{ title: LEGAL_STRINGS.TERMS_TITLE }}
+        />
+        <Stack.Screen
+          name={ROUTES.PRIVACY}
+          options={{ title: LEGAL_STRINGS.PRIVACY_TITLE }}
+        />
       </Stack>
       <StatusBar style="auto" />
       <Toast config={toastConfig} />

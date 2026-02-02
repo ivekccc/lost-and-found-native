@@ -24,7 +24,9 @@ LostAndFoundNative/
 │   │   ├── forms/
 │   │   │   ├── FormInput.tsx         # RHF input wrapper
 │   │   │   └── FormCheckbox.tsx      # RHF checkbox wrapper
-│   │   ├── ui/Button.tsx             # Button komponenta
+│   │   ├── ui/
+│   │   │   ├── Button.tsx            # Button komponenta
+│   │   │   └── FullScreenLoader.tsx  # Loading spinner
 │   │   ├── modal/MessageModal.tsx    # Confirmation dialog
 │   │   └── toast/ToastConfig.tsx     # Toast stilovi
 │   ├── content/
@@ -33,7 +35,10 @@ LostAndFoundNative/
 │   │   ├── strings.ts                # UI tekstovi
 │   │   ├── validation.ts             # Validaciona pravila
 │   │   ├── storage.ts                # AsyncStorage ključevi
-│   │   └── toast.ts                  # Toast konfiguracija
+│   │   ├── toast.ts                  # Toast konfiguracija
+│   │   └── routes.ts                 # Route konfiguracija
+│   ├── hooks/
+│   │   └── useAuthGuard.ts           # Auth navigation guard
 │   ├── services/
 │   │   ├── token.service.ts          # Token management
 │   │   └── toast.service.ts          # Toast wrapper
@@ -392,6 +397,54 @@ export * from "./strings"; // Već uključeno
 
 ---
 
+## Routing & Navigation Guard
+
+### Route Konfiguracija (src/constants/routes.ts)
+
+```typescript
+export const ROUTES = {
+  LOGIN: "login",
+  REGISTER: "register",
+  TABS: "(tabs)",
+  TERMS: "terms",
+  PRIVACY: "privacy",
+} as const;
+
+export const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.TERMS, ROUTES.PRIVACY];
+export const AUTH_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER];
+```
+
+### useAuthGuard Hook (src/hooks/useAuthGuard.ts)
+
+Centralizovana logika za zaštitu ruta:
+
+```typescript
+import { useAuthGuard } from "../src/hooks";
+
+function RootLayoutNav() {
+  const { isLoading } = useAuthGuard();
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
+  // ...
+}
+```
+
+**Automatski:**
+- Neautentifikovani korisnici → `/login`
+- Autentifikovani na auth rutama → `/(tabs)`
+- Public rute (terms, privacy) → Dostupne svima
+
+### Dodavanje Nove Rute
+
+1. Dodaj u `ROUTES` konstante
+2. Dodaj u `PUBLIC_ROUTES` ili ostavi kao protected
+3. Kreiraj `app/ruta.tsx` fajl
+4. Dodaj `Stack.Screen` u `app/_layout.tsx`
+
+---
+
 ## Auth Flow (od A do Š)
 
 ### 1. App Pokretanje
@@ -401,9 +454,10 @@ _layout.tsx
   └── AuthProvider (wrap)
         └── MessageProvider (wrap)
               └── RootLayoutNav
-                    ├── isLoading? → ActivityIndicator
-                    ├── !isAuthenticated? → /login
-                    └── isAuthenticated? → /(tabs)
+                    └── useAuthGuard()
+                          ├── isLoading? → FullScreenLoader
+                          ├── !isAuthenticated? → /login
+                          └── isAuthenticated? → /(tabs)
 ```
 
 ### 2. Login Flow
