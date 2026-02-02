@@ -4,37 +4,113 @@
 
 ```
 LostAndFoundNative/
-├── app/                          # Expo Router (routing)
-│   ├── _layout.tsx               # Root layout (AuthProvider, MessageProvider)
-│   ├── login.tsx                 # Login ekran
-│   ├── register.tsx              # Register ekran
-│   └── (tabs)/                   # Zaštićene rute
-│       ├── _layout.tsx           # Tab konfiguracija
-│       ├── index.tsx             # Home
-│       └── explore.tsx           # Explore
+├── app/                              # Expo Router (file-based routing)
+│   ├── _layout.tsx                   # Root layout (AuthProvider, MessageProvider)
+│   ├── index.tsx                     # Redirect to /(tabs)
+│   ├── login.tsx                     # Login ekran
+│   ├── register.tsx                  # Register ekran
+│   ├── modal.tsx                     # Example modal
+│   └── (tabs)/                       # Zaštićene rute
+│       ├── _layout.tsx               # Tab konfiguracija
+│       ├── index.tsx                 # Home
+│       └── explore.tsx               # Explore
 ├── src/
 │   ├── api/
-│   │   ├── http.ts               # Axios instanca + interceptori
-│   │   └── auth.api.ts           # Auth API pozivi
+│   │   ├── http.ts                   # Axios instanca + interceptori
+│   │   ├── auth.api.ts               # Auth API pozivi
+│   │   └── index.ts                  # Barrel export
 │   ├── components/
-│   │   ├── forms/FormInput.tsx   # RHF input wrapper
-│   │   ├── ui/Button.tsx         # Button komponenta
-│   │   ├── modal/MessageModal.tsx # Confirmation dialog
-│   │   └── toast/ToastConfig.tsx # Toast stilovi
+│   │   ├── forms/FormInput.tsx       # RHF input wrapper
+│   │   ├── ui/Button.tsx             # Button komponenta
+│   │   ├── modal/MessageModal.tsx    # Confirmation dialog
+│   │   └── toast/ToastConfig.tsx     # Toast stilovi
 │   ├── constants/
-│   │   ├── strings.ts            # UI tekstovi
-│   │   ├── validation.ts         # Validaciona pravila
-│   │   ├── storage.ts            # AsyncStorage ključevi
-│   │   └── toast.ts              # Toast konfiguracija
+│   │   ├── strings.ts                # UI tekstovi
+│   │   ├── validation.ts             # Validaciona pravila
+│   │   ├── storage.ts                # AsyncStorage ključevi
+│   │   └── toast.ts                  # Toast konfiguracija
 │   ├── services/
-│   │   ├── token.service.ts      # Token management
-│   │   └── toast.service.ts      # Toast wrapper
-│   ├── store/
-│   │   ├── AuthContext.tsx       # Auth state
-│   │   └── MessageContext.tsx    # Confirmation state
-│   └── types/
-│       └── index.ts              # DTOs
+│   │   ├── token.service.ts          # Token management
+│   │   └── toast.service.ts          # Toast wrapper
+│   └── store/
+│       ├── AuthContext.tsx           # Auth state
+│       └── MessageContext.tsx        # Confirmation state
+├── components/                       # Expo template komponente
+│   ├── themed-text.tsx               # Themed text sa varijantama
+│   ├── themed-view.tsx               # Themed view container
+│   ├── external-link.tsx             # External link wrapper
+│   ├── haptic-tab.tsx                # Tab sa haptic feedback
+│   ├── parallax-scroll-view.tsx      # Parallax scroll
+│   └── ui/
+│       ├── collapsible.tsx           # Collapsible accordion
+│       └── icon-symbol.tsx           # Icon wrapper
+├── constants/
+│   └── theme.ts                      # Light/dark color schemes
+└── hooks/
+    ├── use-color-scheme.ts           # React Native useColorScheme
+    └── use-theme-color.ts            # Theme color resolver
 ```
+
+---
+
+## Tipovi (DTOs)
+
+### Izvor: @lost-and-found/api paket
+
+Tipovi se importuju iz zajedničkog NPM paketa, ne iz lokalnog fajla:
+
+```typescript
+import {
+  AuthRequestDTO,
+  AuthResponseDTO,
+  RegisterRequestDTO,
+  RefreshTokenRequestDTO,
+  RefreshTokenResponseDTO,
+} from "@lost-and-found/api";
+```
+
+### Trenutni Auth Tipovi
+
+```typescript
+// Login
+interface AuthRequestDTO {
+  email: string;
+  password: string;
+}
+
+// Register (trenutna implementacija)
+interface RegisterRequestDTO {
+  email: string;
+  username: string;
+  password: string;
+}
+
+// Response
+interface AuthResponseDTO {
+  token?: string;
+  refreshToken?: string;
+  message?: string;
+}
+
+// Token Refresh
+interface RefreshTokenRequestDTO {
+  refreshToken?: string;
+}
+
+interface RefreshTokenResponseDTO {
+  accessToken?: string;
+  refreshToken?: string;
+  message?: string;
+}
+```
+
+### Dodavanje Novog Tipa
+
+Novi tipovi se dodaju u `lost-and-found-api` paket:
+
+1. Dodaj tip u `lost-and-found-api/src/index.ts`
+2. Rebuild paket: `npm run build`
+3. Importuj u Native projektu iz `@lost-and-found/api`
 
 ---
 
@@ -46,7 +122,7 @@ LostAndFoundNative/
 import { useForm } from "react-hook-form";
 import { FormInput } from "../src/components/forms";
 import { VALIDATION_RULES } from "../src/constants";
-import { MyDTO } from "../src/types";
+import { MyDTO } from "@lost-and-found/api";
 
 export default function MyScreen() {
   const { control, handleSubmit } = useForm<MyDTO>();
@@ -86,13 +162,17 @@ export const VALIDATION_RULES = {
     required: AUTH_STRINGS.PASSWORD_REQUIRED,
     minLength: { value: 6, message: AUTH_STRINGS.PASSWORD_MIN_LENGTH },
   },
+  username: {
+    required: AUTH_STRINGS.USERNAME_REQUIRED,
+    minLength: { value: 3, message: AUTH_STRINGS.USERNAME_MIN_LENGTH },
+  },
   // Dodaj nova pravila ovde
 };
 ```
 
 ### Dodavanje Novog Polja
 
-1. Dodaj DTO tip u `src/types/index.ts`
+1. Dodaj DTO tip u `@lost-and-found/api` paket
 2. Dodaj string konstante u `src/constants/strings.ts`
 3. Dodaj validaciju u `src/constants/validation.ts`
 4. Koristi `<FormInput>` sa pravilima
@@ -127,7 +207,7 @@ const http = axios.create({
 ```typescript
 // src/api/items.api.ts
 import http from "./http";
-import { ItemDTO, CreateItemDTO } from "../types";
+import { ItemDTO, CreateItemDTO } from "@lost-and-found/api";
 
 export const itemsApi = {
   getAll: () => http.get<ItemDTO[]>("/items"),
@@ -232,57 +312,6 @@ interface MessageModalConfig {
 
 ---
 
-## Tipovi (DTOs)
-
-### Lokacija: src/types/index.ts
-
-```typescript
-// Auth
-interface AuthRequestDTO {
-  email: string;
-  password: string;
-}
-
-interface RegisterRequestDTO {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  password: string;
-  phoneNumber?: string;
-}
-
-interface AuthResponseDTO {
-  token?: string;
-  refreshToken?: string;
-  message?: string;
-}
-```
-
-### Dodavanje Novog Tipa
-
-```typescript
-// src/types/index.ts
-export interface ItemDTO {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-  createdAt: string;
-  userId: string;
-}
-
-export interface CreateItemDTO {
-  title: string;
-  description: string;
-  category: string;
-  location: string;
-}
-```
-
----
-
 ## Konstante
 
 ### Strings (src/constants/strings.ts)
@@ -301,6 +330,12 @@ export const COMMON_STRINGS = {
   SUCCESS_TITLE: "Success",
   // ...
 } as const;
+
+export const A11Y_STRINGS = {
+  EMAIL_INPUT: "Email input field",
+  PASSWORD_INPUT: "Password input field",
+  // ...
+} as const;
 ```
 
 ### Dodavanje Novih Stringova
@@ -315,7 +350,7 @@ export const ITEMS_STRINGS = {
 } as const;
 
 // src/constants/index.ts
-export * from "./items"; // Dodaj export
+export * from "./strings"; // Već uključeno
 ```
 
 ---
@@ -409,7 +444,7 @@ Potvrđeno?
 
 ### 1. Tipovi
 
-- [ ] Dodaj DTO u `src/types/index.ts`
+- [ ] Dodaj DTO u `@lost-and-found/api` paket (ako treba novi tip)
 
 ### 2. Konstante
 
@@ -456,6 +491,7 @@ background: #FFFFFF
 surface: #F2F2F7
 text-primary: #000000
 text-secondary: #666666
+text-placeholder: #999999
 border: #CCCCCC
 ```
 
@@ -483,12 +519,41 @@ className = "border border-primary bg-transparent"; // Outline
 
 ---
 
+## Root-Level Komponente
+
+### components/ (Expo Template)
+
+Ove komponente su iz Expo template-a i mogu se koristiti za brzi razvoj:
+
+| Komponenta | Namena |
+|------------|--------|
+| `ThemedText` | Text sa varijantama (title, subtitle, link) |
+| `ThemedView` | View sa theme support |
+| `ExternalLink` | Link koji otvara in-app browser |
+| `HapticTab` | Tab button sa haptic feedback |
+| `ParallaxScrollView` | Scroll sa parallax header efektom |
+| `Collapsible` | Accordion/collapsible sekcija |
+
+### hooks/
+
+| Hook | Namena |
+|------|--------|
+| `useColorScheme()` | Vraća 'light' ili 'dark' |
+| `useThemeColor(props, colorName)` | Resolver za theme boje |
+
+### constants/theme.ts
+
+Definiše `Colors` objekt sa light/dark varijantama za:
+- text, background, tint, icon, tabIconDefault, tabIconSelected
+
+---
+
 ## Pravila
 
 1. **Forme** - Uvek koristi `react-hook-form` + `FormInput`
 2. **Validacija** - Pravila u `constants/validation.ts`, stringovi u `strings.ts`
 3. **API** - Greške se automatski prikazuju, NE ručno u catch bloku
-4. **Tipovi** - Svi DTOs u `src/types/index.ts`
+4. **Tipovi** - Importuj iz `@lost-and-found/api` paketa
 5. **Confirmation** - Za destructive akcije koristi `useMessage().confirm()`
 6. **Toast** - Za ručne notifikacije koristi `toastService`
 7. **Styling** - NativeWind klase, boje iz tailwind.config.js
