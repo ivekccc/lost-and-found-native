@@ -9,7 +9,6 @@ LostAndFoundNative/
 │   ├── index.tsx                     # Redirect to /(tabs)
 │   ├── login.tsx                     # Login ekran
 │   ├── register.tsx                  # Register ekran
-│   ├── modal.tsx                     # Example modal
 │   └── (tabs)/                       # Zaštićene rute
 │       ├── _layout.tsx               # Tab konfiguracija
 │       ├── index.tsx                 # Home
