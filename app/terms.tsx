@@ -18,7 +18,7 @@ export default function TermsScreen() {
 
         {TERMS_OF_SERVICE.map((section, index) => (
           <View key={index} className="mb-6">
-            <Text className="text-lg font-semibold text-text-primary mb-2">
+            <Text className="text-lg font-semibold text-text mb-2">
               {section.title}
             </Text>
             <Text className="text-base text-text-secondary leading-6">

@@ -24,7 +24,7 @@ export function FormInput<T extends FieldValues>({
       render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
         <View className="mb-4">
           {label && (
-            <Text className="text-text-primary text-sm font-medium mb-1">
+            <Text className="text-text text-sm font-medium mb-1">
               {label}
             </Text>
           )}
@@ -35,7 +35,7 @@ export function FormInput<T extends FieldValues>({
             onBlur={onBlur}
             value={value}
             className={`
-              border rounded-lg px-4 py-3 text-text-primary bg-white
+              border rounded-lg px-4 py-3 text-text bg-white
               ${error ? "border-error" : "border-border"}
             `}
             {...rest}

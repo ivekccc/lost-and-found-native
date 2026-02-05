@@ -51,7 +51,7 @@ export default function RegisterScreen() {
           contentContainerClassName="flex-grow justify-center px-6 py-8 bg-background"
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="text-3xl font-bold text-text-primary mb-8">
+          <Text className="text-3xl font-bold text-text mb-8">
             {AUTH_STRINGS.REGISTER_TITLE}
           </Text>
 

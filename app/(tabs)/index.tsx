@@ -35,10 +35,10 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 justify-center items-center p-5 bg-background">
-      <Text className="text-2xl font-bold text-text-primary mb-5">Home</Text>
+      <Text className="text-2xl font-bold text-text mb-5">Home</Text>
 
       <View className="w-full gap-3 mb-8">
-        <Text className="text-lg font-semibold text-text-primary mb-2">Toast Demo</Text>
+        <Text className="text-lg font-semibold text-text mb-2">Toast Demo</Text>
         <Button
           title="Success Toast"
           onPress={() => toastService.success('Success', 'Operation completed successfully')}

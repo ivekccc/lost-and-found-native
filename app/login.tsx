@@ -38,7 +38,7 @@ export default function LoginScreen() {
         className="flex-1"
       >
         <View className="flex-1 justify-center px-6 bg-background">
-          <Text className="text-3xl font-bold text-text-primary mb-8">
+          <Text className="text-3xl font-bold text-text mb-8">
             {AUTH_STRINGS.LOGIN_TITLE}
           </Text>
 
