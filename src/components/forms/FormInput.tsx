@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { TextInput, Text, View, TextInputProps, Animated } from "react-native";
+import { useState, useEffect } from "react";
+import { TextInput, Text, View, TextInputProps } from "react-native";
 import {
   Control,
   Controller,
@@ -8,6 +8,11 @@ import {
   RegisterOptions,
   useWatch,
 } from "react-hook-form";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useColorScheme } from "../../hooks/useColorScheme";
 import { primary, lightTheme, darkTheme } from "../../constants/theme";
@@ -18,6 +23,7 @@ const ICON_SIZE = 20;
 const ICON_SPACING = 12;
 const BASE_PADDING = 16;
 const PADDING_WITH_ICON = BASE_PADDING + ICON_SIZE + ICON_SPACING;
+const ANIMATION_DURATION = 200;
 
 interface FormInputProps<T extends FieldValues> extends Omit<
   TextInputProps,
@@ -41,25 +47,25 @@ export function FormInput<T extends FieldValues>({
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? darkTheme : lightTheme;
   const value = useWatch({ control, name });
-  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  const isActive = isFocused || !!value;
+  const animatedValue = useSharedValue(isActive ? 1 : 0);
 
   useEffect(() => {
-    Animated.timing(animatedValue, {
-      toValue: isFocused || value ? 1 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [isFocused, value, animatedValue]);
+    animatedValue.value = withTiming(isActive ? 1 : 0, {
+      duration: ANIMATION_DURATION,
+    });
+  }, [isActive, animatedValue]);
 
-  const labelTop = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [LABEL_POSITION.unfocused, LABEL_POSITION.focused],
-  });
-
-  const labelFontSize = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [LABEL_FONT_SIZE.unfocused, LABEL_FONT_SIZE.focused],
-  });
+  const labelAnimatedStyle = useAnimatedStyle(() => ({
+    top:
+      LABEL_POSITION.unfocused +
+      (LABEL_POSITION.focused - LABEL_POSITION.unfocused) * animatedValue.value,
+    fontSize:
+      LABEL_FONT_SIZE.unfocused +
+      (LABEL_FONT_SIZE.focused - LABEL_FONT_SIZE.unfocused) *
+        animatedValue.value,
+  }));
 
   return (
     <Controller
@@ -87,14 +93,15 @@ export function FormInput<T extends FieldValues>({
               />
             )}
             <Animated.Text
-              className={isFocused ? "text-primary " : "text-text-muted"}
-              style={{
-                position: "absolute",
-                left: icon ? PADDING_WITH_ICON : BASE_PADDING,
-                top: labelTop,
-                fontSize: labelFontSize,
-                zIndex: 1,
-              }}
+              className={isFocused ? "text-primary" : "text-text-muted"}
+              style={[
+                {
+                  position: "absolute",
+                  left: icon ? PADDING_WITH_ICON : BASE_PADDING,
+                  zIndex: 1,
+                },
+                labelAnimatedStyle,
+              ]}
             >
               {placeholder}
             </Animated.Text>
