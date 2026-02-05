@@ -9,8 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import Toast from "react-native-toast-message";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useAuthGuard } from "../src/hooks";
+import { useColorScheme, useAuthGuard } from "../src/hooks";
 import { AuthProvider } from "../src/store/AuthContext";
 import { MessageProvider } from "../src/store/MessageContext";
 import { toastConfig } from "../src/components/toast";
