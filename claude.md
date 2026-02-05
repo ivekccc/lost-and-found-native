@@ -307,7 +307,7 @@ Za boolean polja (checkboxes) koristi `FormCheckbox`:
 - **Focus border** - `border-primary` kad je fokusiran
 - **Error state** - `border-error` kad ima grešku
 - **Dark mode** - koristi `bg-input` i boje iz palete
-- **Animacija** - React Native Animated API sa interpolacijom
+- **Animacija** - `react-native-reanimated` (UI thread, bez lag-a)
 - **Ikona** - opciona ikona na početku polja
 
 ### FormInput sa Ikonom
