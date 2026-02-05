@@ -9,11 +9,15 @@ import {
   useWatch,
 } from "react-hook-form";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { lightTheme } from "../../constants/theme";
-// import { primary } from "../../constants/theme";
+import { useColorScheme } from "../../hooks/useColorScheme";
+import { primary, lightTheme, darkTheme } from "../../constants/theme";
 
-const LABEL_POSITION = { unfocused: 16, focused: 6 };
+const LABEL_POSITION = { unfocused: 16, focused: 4 };
 const LABEL_FONT_SIZE = { unfocused: 14, focused: 11 };
+const ICON_SIZE = 20;
+const ICON_SPACING = 12;
+const BASE_PADDING = 16;
+const PADDING_WITH_ICON = BASE_PADDING + ICON_SIZE + ICON_SPACING;
 
 interface FormInputProps<T extends FieldValues> extends Omit<
   TextInputProps,
@@ -21,25 +25,21 @@ interface FormInputProps<T extends FieldValues> extends Omit<
 > {
   control: Control<T>;
   name: Path<T>;
-  label?: string;
   rules?: RegisterOptions<T>;
   icon?: React.ComponentProps<typeof FontAwesome>["name"];
 }
 
-const ICON_SIZE = 20;
-const ICON_LEFT_PADDING = 16;
-const INPUT_PADDING_WITH_ICON = ICON_LEFT_PADDING + ICON_SIZE + 12;
-
 export function FormInput<T extends FieldValues>({
   control,
   name,
-  label,
   rules,
   placeholder,
   icon,
   ...rest
 }: FormInputProps<T>) {
   const [isFocused, setIsFocused] = useState(false);
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
   const value = useWatch({ control, name });
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -76,11 +76,10 @@ export function FormInput<T extends FieldValues>({
               <FontAwesome
                 name={icon}
                 size={ICON_SIZE}
-                // color={isFocused ? primary[500] : lightTheme.textMuted}
-                color={lightTheme.textMuted}
+                color={isFocused ? primary[500] : theme.textMuted}
                 style={{
                   position: "absolute",
-                  left: ICON_LEFT_PADDING,
+                  left: BASE_PADDING,
                   top: "50%",
                   transform: [{ translateY: -ICON_SIZE / 2 }],
                   zIndex: 1,
@@ -88,10 +87,10 @@ export function FormInput<T extends FieldValues>({
               />
             )}
             <Animated.Text
-              className={isFocused ? "text-primary" : "text-text-muted"}
+              className={isFocused ? "text-primary " : "text-text-muted"}
               style={{
                 position: "absolute",
-                left: icon ? INPUT_PADDING_WITH_ICON : 16,
+                left: icon ? PADDING_WITH_ICON : BASE_PADDING,
                 top: labelTop,
                 fontSize: labelFontSize,
                 zIndex: 1,
@@ -112,8 +111,8 @@ export function FormInput<T extends FieldValues>({
                 ${error ? "border-error" : isFocused ? "border-primary" : "border-border"}
               `}
               style={{
-                paddingLeft: icon ? INPUT_PADDING_WITH_ICON : 16,
-                paddingRight: 16,
+                paddingLeft: icon ? PADDING_WITH_ICON : BASE_PADDING,
+                paddingRight: BASE_PADDING,
               }}
               {...rest}
             />

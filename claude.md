@@ -308,6 +308,39 @@ Za boolean polja (checkboxes) koristi `FormCheckbox`:
 - **Error state** - `border-error` kad ima grešku
 - **Dark mode** - koristi `bg-input` i boje iz palete
 - **Animacija** - React Native Animated API sa interpolacijom
+- **Ikona** - opciona ikona na početku polja
+
+### FormInput sa Ikonom
+
+Koristimo **FontAwesome** iz `@expo/vector-icons`:
+
+```tsx
+<FormInput
+  control={control}
+  name="email"
+  placeholder="Email"
+  icon="envelope"  // FontAwesome ikona
+/>
+
+<FormInput
+  control={control}
+  name="password"
+  placeholder="Password"
+  icon="lock"
+/>
+```
+
+**Dostupne ikone:** [icons.expo.fyi](https://icons.expo.fyi) → filtriraj "FontAwesome"
+
+**VAŽNO:** `className` NE RADI za boju ikone - FontAwesome koristi direktno `color` prop:
+
+```tsx
+// ❌ Ne radi
+<FontAwesome className="text-primary" />
+
+// ✅ Radi - koristi vrednosti iz palete
+<FontAwesome color={primary[500]} />
+```
 
 ---
 
