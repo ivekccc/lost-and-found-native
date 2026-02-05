@@ -51,6 +51,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             autoComplete="email"
             accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
+            icon="envelope"
           />
 
           <FormInput
@@ -61,6 +62,7 @@ export default function LoginScreen() {
             secureTextEntry
             autoComplete="password"
             accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
+            icon="lock"
           />
 
           <View className="gap-3 mt-4">

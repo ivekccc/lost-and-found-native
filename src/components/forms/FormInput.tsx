@@ -8,6 +8,9 @@ import {
   RegisterOptions,
   useWatch,
 } from "react-hook-form";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { lightTheme } from "../../constants/theme";
+// import { primary } from "../../constants/theme";
 
 const LABEL_POSITION = { unfocused: 16, focused: 6 };
 const LABEL_FONT_SIZE = { unfocused: 14, focused: 11 };
@@ -20,7 +23,12 @@ interface FormInputProps<T extends FieldValues> extends Omit<
   name: Path<T>;
   label?: string;
   rules?: RegisterOptions<T>;
+  icon?: React.ComponentProps<typeof FontAwesome>["name"];
 }
+
+const ICON_SIZE = 20;
+const ICON_LEFT_PADDING = 16;
+const INPUT_PADDING_WITH_ICON = ICON_LEFT_PADDING + ICON_SIZE + 12;
 
 export function FormInput<T extends FieldValues>({
   control,
@@ -28,6 +36,7 @@ export function FormInput<T extends FieldValues>({
   label,
   rules,
   placeholder,
+  icon,
   ...rest
 }: FormInputProps<T>) {
   const [isFocused, setIsFocused] = useState(false);
@@ -63,11 +72,26 @@ export function FormInput<T extends FieldValues>({
       }) => (
         <View className="mb-4">
           <View className="relative">
+            {icon && (
+              <FontAwesome
+                name={icon}
+                size={ICON_SIZE}
+                // color={isFocused ? primary[500] : lightTheme.textMuted}
+                color={lightTheme.textMuted}
+                style={{
+                  position: "absolute",
+                  left: ICON_LEFT_PADDING,
+                  top: "50%",
+                  transform: [{ translateY: -ICON_SIZE / 2 }],
+                  zIndex: 1,
+                }}
+              />
+            )}
             <Animated.Text
               className={isFocused ? "text-primary" : "text-text-muted"}
               style={{
                 position: "absolute",
-                left: 16,
+                left: icon ? INPUT_PADDING_WITH_ICON : 16,
                 top: labelTop,
                 fontSize: labelFontSize,
                 zIndex: 1,
@@ -84,9 +108,13 @@ export function FormInput<T extends FieldValues>({
               onFocus={() => setIsFocused(true)}
               value={value}
               className={`
-                border-2 rounded-lg px-4 pt-6 pb-2 text-text bg-input
+                border-2 rounded-lg pt-6 pb-2 text-text bg-input
                 ${error ? "border-error" : isFocused ? "border-primary" : "border-border"}
               `}
+              style={{
+                paddingLeft: icon ? INPUT_PADDING_WITH_ICON : 16,
+                paddingRight: 16,
+              }}
               {...rest}
             />
           </View>
