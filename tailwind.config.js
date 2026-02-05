@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -41,6 +38,7 @@ module.exports = {
           DEFAULT: "var(--color-border)",
           light: "var(--color-border-light)",
         },
+        input: "var(--color-input)",
       },
       spacing: {
         xs: "4px",

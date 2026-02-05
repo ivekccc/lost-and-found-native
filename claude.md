@@ -5,7 +5,7 @@
 ```
 LostAndFoundNative/
 ├── app/                              # Expo Router (file-based routing)
-│   ├── _layout.tsx                   # Root layout (AuthProvider, MessageProvider)
+│   ├── _layout.tsx                   # Root layout (AuthProvider, Theme)
 │   ├── index.tsx                     # Redirect to /(tabs)
 │   ├── login.tsx                     # Login ekran
 │   ├── register.tsx                  # Register ekran + terms checkbox
@@ -21,6 +21,14 @@ LostAndFoundNative/
 │   │   ├── auth.api.ts               # Auth API pozivi
 │   │   └── index.ts                  # Barrel export
 │   ├── components/
+│   │   ├── expo/                     # Expo template komponente
+│   │   │   ├── Collapsible.tsx
+│   │   │   ├── ExternalLink.tsx
+│   │   │   ├── HapticTab.tsx
+│   │   │   ├── IconSymbol.tsx
+│   │   │   ├── ParallaxScrollView.tsx
+│   │   │   ├── ThemedText.tsx
+│   │   │   └── ThemedView.tsx
 │   │   ├── forms/
 │   │   │   ├── FormInput.tsx         # RHF input wrapper
 │   │   │   └── FormCheckbox.tsx      # RHF checkbox wrapper
@@ -36,29 +44,121 @@ LostAndFoundNative/
 │   │   ├── validation.ts             # Validaciona pravila
 │   │   ├── storage.ts                # AsyncStorage ključevi
 │   │   ├── toast.ts                  # Toast konfiguracija
-│   │   └── routes.ts                 # Route konfiguracija
+│   │   ├── routes.ts                 # Route konfiguracija
+│   │   └── theme.ts                  # PALETA BOJA (jedan izvor istine)
 │   ├── hooks/
-│   │   └── useAuthGuard.ts           # Auth navigation guard
+│   │   ├── useAuthGuard.ts           # Auth navigation guard
+│   │   ├── useColorScheme.ts         # React Native useColorScheme
+│   │   └── useThemeColor.ts          # Theme color resolver
 │   ├── services/
 │   │   ├── token.service.ts          # Token management
 │   │   └── toast.service.ts          # Toast wrapper
 │   └── store/
 │       ├── AuthContext.tsx           # Auth state
 │       └── MessageContext.tsx        # Confirmation state
-├── components/                       # Expo template komponente
-│   ├── themed-text.tsx               # Themed text sa varijantama
-│   ├── themed-view.tsx               # Themed view container
-│   ├── external-link.tsx             # External link wrapper
-│   ├── haptic-tab.tsx                # Tab sa haptic feedback
-│   ├── parallax-scroll-view.tsx      # Parallax scroll
-│   └── ui/
-│       ├── collapsible.tsx           # Collapsible accordion
-│       └── icon-symbol.tsx           # Icon wrapper
-├── constants/
-│   └── theme.ts                      # Light/dark color schemes
-└── hooks/
-    ├── use-color-scheme.ts           # React Native useColorScheme
-    └── use-theme-color.ts            # Theme color resolver
+└── tailwind.config.js                # NativeWind konfiguracija
+```
+
+---
+
+## Paleta Boja (VAŽNO!)
+
+### PRAVILO: Uvek koristi boje iz palete!
+
+**NIKAD ne koristi custom/hardcoded boje** (npr. `#FF0000`, `bg-[#123456]`).
+
+Ako ti treba boja koja ne postoji u paleti:
+1. Zatraži dodavanje u paletu
+2. Dodaj je u `src/constants/theme.ts`
+3. Dodaj CSS varijablu u `tailwind.config.js`
+4. Tek onda koristi
+
+### Primary Paleta (#F54927)
+
+| Klasa | Hex | Upotreba |
+|-------|-----|----------|
+| `primary-50` | `#FEF1F0` | Najsvetlija pozadina |
+| `primary-100` | `#FDDEDD` | Hover states |
+| `primary-200` | `#FBC1BD` | Light accent |
+| `primary-300` | `#FA9D96` | - |
+| `primary-400` | `#F87669` | - |
+| `primary-500` | `#F54927` | **Osnovna boja** |
+| `primary-600` | `#C3381D` | Hover na dugmadima |
+| `primary-700` | `#952913` | Pressed state |
+| `primary-800` | `#691A0A` | - |
+| `primary-900` | `#3D0B03` | - |
+| `primary-950` | `#2C0602` | Najtamnija |
+
+### Semantic Boje
+
+| Klasa | Hex | Upotreba |
+|-------|-----|----------|
+| `success` | `#34C759` | Uspešne akcije |
+| `warning` | `#FF9500` | Upozorenja |
+| `error` | `#FF3B30` | Greške, destructive |
+| `info` | `#007AFF` | Informacije |
+
+### Theme Boje (automatski light/dark)
+
+| Klasa | Light | Dark | Upotreba |
+|-------|-------|------|----------|
+| `background` | `#FFFFFF` | `#0D0D0D` | Pozadina ekrana |
+| `surface` | `#F8F8F8` | `#1A1A1A` | Sekcije, grupacije |
+| `card` | `#FFFFFF` | `#262626` | Kartice |
+| `text` | `#1A1A1A` | `#FAFAFA` | Glavni tekst |
+| `text-secondary` | `#6B7280` | `#A1A1AA` | Sekundarni tekst |
+| `text-muted` | `#9CA3AF` | `#71717A` | Placeholder, hint |
+| `border` | `#E5E5E5` | `#3F3F46` | Borderi |
+| `border-light` | `#F0F0F0` | `#27272A` | Subtle borderi |
+
+### Primeri Korišćenja
+
+```tsx
+// ✅ ISPRAVNO - koristi klase iz palete
+<View className="bg-background">
+  <Text className="text-text">Naslov</Text>
+  <Text className="text-text-secondary">Podnaslov</Text>
+  <Button className="bg-primary" />
+  <Button className="bg-primary-600" /> {/* hover/darker */}
+  <Text className="text-error">Greška</Text>
+</View>
+
+// ❌ POGREŠNO - hardcoded boje
+<View className="bg-[#FFFFFF]">
+  <Text className="text-[#000000]">Naslov</Text>
+  <Text style={{ color: '#666' }}>Podnaslov</Text>
+</View>
+```
+
+### Dodavanje Nove Boje u Paletu
+
+1. **Definiši u `src/constants/theme.ts`:**
+```typescript
+const lightTheme = {
+  // ... postojeće
+  myNewColor: '#AABBCC',
+};
+
+const darkTheme = {
+  // ... postojeće
+  myNewColor: '#112233',
+};
+
+// Dodaj u themes.light i themes.dark:
+'--color-my-new': lightTheme.myNewColor,
+```
+
+2. **Dodaj u `tailwind.config.js`:**
+```javascript
+colors: {
+  // ... postojeće
+  'my-new': 'var(--color-my-new)',
+}
+```
+
+3. **Koristi:**
+```tsx
+<View className="bg-my-new" />
 ```
 
 ---
@@ -192,22 +292,22 @@ export const VALIDATION_RULES = {
 Za boolean polja (checkboxes) koristi `FormCheckbox`:
 
 ```typescript
-import { FormCheckbox } from "../src/components/forms";
-
 <FormCheckbox
   control={control}
   name="termsAccepted"
   rules={VALIDATION_RULES.termsAccepted}
-  accessibilityLabel="Accept terms"
 >
-  <Text>
-    I agree to the{" "}
-    <Text className="text-primary underline" onPress={() => router.push("/terms")}>
-      Terms of Service
-    </Text>
-  </Text>
+  <Text>I agree to the Terms</Text>
 </FormCheckbox>
 ```
+
+### FormInput Features
+
+- **Floating label** - placeholder se animira gore na fokus
+- **Focus border** - `border-primary` kad je fokusiran
+- **Error state** - `border-error` kad ima grešku
+- **Dark mode** - koristi `bg-input` i boje iz palete
+- **Animacija** - React Native Animated API sa interpolacijom
 
 ---
 
@@ -570,51 +670,34 @@ Potvrđeno?
 
 ## NativeWind Styling
 
-### Boje (tailwind.config.js)
-
-```
-primary: #007AFF (plava)
-secondary: #5856D6 (ljubičasta)
-success: #34C759 (zelena)
-warning: #FF9500 (narandžasta)
-error: #FF3B30 (crvena)
-background: #FFFFFF
-surface: #F2F2F7
-text-primary: #000000
-text-secondary: #666666
-text-placeholder: #999999
-border: #CCCCCC
-```
-
 ### Uobičajene Klase
 
 ```typescript
 // Container
-className = "flex-1 justify-center items-center p-5 bg-background";
+className="flex-1 justify-center items-center p-5 bg-background"
 
-// Text
-className = "text-2xl font-bold text-text-primary";
-className = "text-base text-text-secondary";
-className = "text-sm text-error";
+// Tekst
+className="text-2xl font-bold text-text"
+className="text-base text-text-secondary"
+className="text-sm text-text-muted"
+className="text-sm text-error"
 
 // Input
-className =
-  "border rounded-lg px-4 py-3 text-text-primary bg-white border-border";
-className = "border-error"; // Greška
+className="border rounded-lg px-4 py-3 text-text bg-card border-border"
+className="border-error" // Greška
 
-// Button
-className = "rounded-lg py-4 items-center justify-center bg-primary";
-className = "bg-secondary"; // Secondary
-className = "border border-primary bg-transparent"; // Outline
+// Kartice
+className="bg-card rounded-xl p-4 border border-border"
+
+// Dugmad
+className="rounded-lg py-4 items-center justify-center bg-primary"
+className="bg-primary-600" // Hover/pressed
+className="border border-primary bg-transparent" // Outline
 ```
 
 ---
 
-## Root-Level Komponente
-
-### components/ (Expo Template)
-
-Ove komponente su iz Expo template-a i mogu se koristiti za brzi razvoj:
+## Expo Komponente (src/components/expo/)
 
 | Komponenta | Namena |
 |------------|--------|
@@ -624,27 +707,17 @@ Ove komponente su iz Expo template-a i mogu se koristiti za brzi razvoj:
 | `HapticTab` | Tab button sa haptic feedback |
 | `ParallaxScrollView` | Scroll sa parallax header efektom |
 | `Collapsible` | Accordion/collapsible sekcija |
-
-### hooks/
-
-| Hook | Namena |
-|------|--------|
-| `useColorScheme()` | Vraća 'light' ili 'dark' |
-| `useThemeColor(props, colorName)` | Resolver za theme boje |
-
-### constants/theme.ts
-
-Definiše `Colors` objekt sa light/dark varijantama za:
-- text, background, tint, icon, tabIconDefault, tabIconSelected
+| `IconSymbol` | SF Symbols / Material Icons wrapper |
 
 ---
 
 ## Pravila
 
-1. **Forme** - Uvek koristi `react-hook-form` + `FormInput`
-2. **Validacija** - Pravila u `constants/validation.ts`, stringovi u `strings.ts`
-3. **API** - Greške se automatski prikazuju, NE ručno u catch bloku
-4. **Tipovi** - Importuj iz `@lost-and-found/api` paketa
-5. **Confirmation** - Za destructive akcije koristi `useMessage().confirm()`
-6. **Toast** - Za ručne notifikacije koristi `toastService`
-7. **Styling** - NativeWind klase, boje iz tailwind.config.js
+1. **Boje** - UVEK iz palete, NIKAD hardcoded. Ako treba nova boja → dodaj u paletu
+2. **Forme** - Uvek koristi `react-hook-form` + `FormInput`
+3. **Validacija** - Pravila u `constants/validation.ts`, stringovi u `strings.ts`
+4. **API** - Greške se automatski prikazuju, NE ručno u catch bloku
+5. **Tipovi** - Importuj iz `@lost-and-found/api` paketa
+6. **Confirmation** - Za destructive akcije koristi `useMessage().confirm()`
+7. **Toast** - Za ručne notifikacije koristi `toastService`
+8. **Styling** - NativeWind klase, boje iz `src/constants/theme.ts`
