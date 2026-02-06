@@ -20,6 +20,7 @@ import {
   A11Y_STRINGS,
   LEGAL_STRINGS,
 } from "../src/constants";
+import { AuthHeader } from "../src/components/auth";
 
 interface RegisterFormData extends RegisterRequestDTO {
   termsAccepted: boolean;
@@ -48,85 +49,85 @@ export default function RegisterScreen() {
         className="flex-1"
       >
         <ScrollView
-          contentContainerClassName="flex-grow justify-center px-6 py-8 bg-background"
-          keyboardShouldPersistTaps="handled"
+          className="flex-1"
+          bounces={false}
+          contentInsetAdjustmentBehavior="automatic"
         >
-          <Text className="text-3xl font-bold text-text mb-8">
-            {AUTH_STRINGS.REGISTER_TITLE}
-          </Text>
-
-          <FormInput
-            control={control}
-            name="email"
-            placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
-            rules={VALIDATION_RULES.email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
-          />
-
-          <FormInput
-            control={control}
-            name="username"
-            placeholder={AUTH_STRINGS.USERNAME_PLACEHOLDER}
-            rules={VALIDATION_RULES.username}
-            autoCapitalize="none"
-            autoComplete="username"
-            accessibilityLabel={A11Y_STRINGS.USERNAME_INPUT}
-          />
-
-          <FormInput
-            control={control}
-            name="password"
-            placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
-            rules={VALIDATION_RULES.password}
-            secureTextEntry
-            autoComplete="new-password"
-            accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
-          />
-
-          <FormCheckbox
-            control={control}
-            name="termsAccepted"
-            rules={VALIDATION_RULES.termsAccepted}
-            accessibilityLabel={A11Y_STRINGS.TERMS_CHECKBOX}
-          >
-            <Text className="text-sm text-text-secondary leading-5">
-              {LEGAL_STRINGS.TERMS_CHECKBOX_PREFIX}
-              <Text
-                className="text-primary underline"
-                onPress={() => router.push("/terms")}
-                accessibilityRole="link"
-                accessibilityLabel={A11Y_STRINGS.TERMS_LINK}
-              >
-                {LEGAL_STRINGS.TERMS_LINK}
-              </Text>
-              {LEGAL_STRINGS.AND}
-              <Text
-                className="text-primary underline"
-                onPress={() => router.push("/privacy")}
-                accessibilityRole="link"
-                accessibilityLabel={A11Y_STRINGS.PRIVACY_LINK}
-              >
-                {LEGAL_STRINGS.PRIVACY_LINK}
-              </Text>
-            </Text>
-          </FormCheckbox>
-
-          <View className="gap-3 mt-2">
-            <Button
-              title={AUTH_STRINGS.REGISTER_BUTTON}
-              onPress={handleSubmit(onSubmit)}
-              loading={loading}
-              accessibilityLabel={A11Y_STRINGS.REGISTER_BUTTON}
+          <AuthHeader subtitle={AUTH_STRINGS.REGISTER_HEADER_SUBTITLE} />
+          <View className="px-6 pt-12">
+            <FormInput
+              control={control}
+              name="email"
+              placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
+              rules={VALIDATION_RULES.email}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
             />
-            <Button
-              title={AUTH_STRINGS.LOGIN_BUTTON}
-              onPress={() => router.back()}
-              variant="outline"
-              accessibilityLabel={A11Y_STRINGS.GO_TO_LOGIN}
+
+            <FormInput
+              control={control}
+              name="username"
+              placeholder={AUTH_STRINGS.USERNAME_PLACEHOLDER}
+              rules={VALIDATION_RULES.username}
+              autoCapitalize="none"
+              autoComplete="username"
+              accessibilityLabel={A11Y_STRINGS.USERNAME_INPUT}
             />
+
+            <FormInput
+              control={control}
+              name="password"
+              placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
+              rules={VALIDATION_RULES.password}
+              secureTextEntry
+              autoComplete="new-password"
+              accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
+            />
+
+            <FormCheckbox
+              control={control}
+              name="termsAccepted"
+              rules={VALIDATION_RULES.termsAccepted}
+              accessibilityLabel={A11Y_STRINGS.TERMS_CHECKBOX}
+            >
+              <Text className="text-sm text-text-secondary leading-5">
+                {LEGAL_STRINGS.TERMS_CHECKBOX_PREFIX}
+                <Text
+                  className="text-primary underline"
+                  onPress={() => router.push("/terms")}
+                  accessibilityRole="link"
+                  accessibilityLabel={A11Y_STRINGS.TERMS_LINK}
+                >
+                  {LEGAL_STRINGS.TERMS_LINK}
+                </Text>
+                {LEGAL_STRINGS.AND}
+                <Text
+                  className="text-primary underline"
+                  onPress={() => router.push("/privacy")}
+                  accessibilityRole="link"
+                  accessibilityLabel={A11Y_STRINGS.PRIVACY_LINK}
+                >
+                  {LEGAL_STRINGS.PRIVACY_LINK}
+                </Text>
+              </Text>
+            </FormCheckbox>
+
+            <View className="gap-3 mt-2">
+              <Button
+                title={AUTH_STRINGS.REGISTER_BUTTON}
+                onPress={handleSubmit(onSubmit)}
+                loading={loading}
+                accessibilityLabel={A11Y_STRINGS.REGISTER_BUTTON}
+              />
+              <Button
+                title={AUTH_STRINGS.LOGIN_BUTTON}
+                onPress={() => router.back()}
+                variant="outline"
+                accessibilityLabel={A11Y_STRINGS.GO_TO_LOGIN}
+              />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

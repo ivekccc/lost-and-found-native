@@ -1,6 +1,6 @@
 export const AUTH_STRINGS = {
-  LOGIN_TITLE: "Login",
-  REGISTER_TITLE: "Register",
+  REGISTER_HEADER_SUBTITLE: "Join us to find and report lost items!",
+  LOGIN_HEADER_SUBTITLE: "Welcome back! Sign in to continue",
   EMAIL_PLACEHOLDER: "Email",
   PASSWORD_PLACEHOLDER: "Password",
   FIRST_NAME_PLACEHOLDER: "First Name",
