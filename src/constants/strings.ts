@@ -1,6 +1,7 @@
 export const AUTH_STRINGS = {
   REGISTER_HEADER_SUBTITLE: "Join us to find and report lost items!",
   LOGIN_HEADER_SUBTITLE: "Welcome back! Sign in to continue",
+  FORGOT_PASSWORD: "Forgot Password?",
   EMAIL_PLACEHOLDER: "Email",
   PASSWORD_PLACEHOLDER: "Password",
   FIRST_NAME_PLACEHOLDER: "First Name",
@@ -33,13 +34,14 @@ export const COMMON_STRINGS = {
   RETRY: "Retry",
   CANCEL: "Cancel",
   OK: "OK",
+  OR: "OR",
 } as const;
 
 export const A11Y_STRINGS = {
   EMAIL_INPUT: "Enter your email address",
   PASSWORD_INPUT: "Enter your password",
   LOGIN_BUTTON: "Sign in to your account",
-  GO_TO_REGISTER: "Go to registration page",
+  GO_TO_REGISTER: "Register",
   FIRST_NAME_INPUT: "Enter your first name",
   LAST_NAME_INPUT: "Enter your last name",
   USERNAME_INPUT: "Choose a username",

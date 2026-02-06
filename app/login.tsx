@@ -5,6 +5,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -14,8 +16,13 @@ import { AuthRequestDTO } from "@lost-and-found/api";
 import { AuthHeader } from "../src/components/auth";
 
 import { FormInput } from "../src/components/forms";
-import { Button } from "../src/components/ui";
-import { AUTH_STRINGS, VALIDATION_RULES, A11Y_STRINGS } from "../src/constants";
+import { Button, Divider } from "../src/components/ui";
+import {
+  AUTH_STRINGS,
+  VALIDATION_RULES,
+  A11Y_STRINGS,
+  COMMON_STRINGS,
+} from "../src/constants";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -67,6 +74,12 @@ export default function LoginScreen() {
               icon="lock"
             />
 
+            <TouchableOpacity className="self-end my-4">
+              <Text className="text-primary font-medium">
+                {AUTH_STRINGS.FORGOT_PASSWORD}
+              </Text>
+            </TouchableOpacity>
+
             <View className="gap-3 mt-4">
               <Button
                 title={AUTH_STRINGS.LOGIN_BUTTON}
@@ -74,12 +87,17 @@ export default function LoginScreen() {
                 loading={loading}
                 accessibilityLabel={A11Y_STRINGS.LOGIN_BUTTON}
               />
-              <Button
-                title={AUTH_STRINGS.REGISTER_BUTTON}
-                onPress={() => router.push("/register")}
-                variant="outline"
-                accessibilityLabel={A11Y_STRINGS.GO_TO_REGISTER}
-              />
+              <Divider text={COMMON_STRINGS.OR} />
+              <View className="flex-row justify-center">
+                <Text className="text-text-secondary">
+                  {AUTH_STRINGS.NO_ACCOUNT}
+                </Text>
+                <TouchableOpacity onPress={() => router.push("/register")}>
+                  <Text className="text-primary font-medium ml-1">
+                    {A11Y_STRINGS.GO_TO_REGISTER}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>
