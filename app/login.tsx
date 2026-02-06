@@ -15,7 +15,7 @@ import { useAuth } from "../src/store/AuthContext";
 import { AuthRequestDTO } from "@lost-and-found/api";
 import { AuthHeader } from "../src/components/auth";
 
-import { FormInput } from "../src/components/forms";
+import { FormInput, PasswordInput } from "../src/components/forms";
 import { Button, Divider } from "../src/components/ui";
 import {
   AUTH_STRINGS,
@@ -63,15 +63,11 @@ export default function LoginScreen() {
               icon="envelope"
             />
 
-            <FormInput
+            <PasswordInput
               control={control}
               name="password"
               placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
               rules={VALIDATION_RULES.password}
-              secureTextEntry
-              autoComplete="password"
-              accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
-              icon="lock"
             />
 
             <TouchableOpacity className="self-end my-4">
