@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  TextInput,
-  Text,
-  View,
-  TextInputProps,
-  Pressable,
-} from "react-native";
+import { TextInput, Text, View, TextInputProps, Pressable } from "react-native";
 import {
   Control,
   Controller,
@@ -30,8 +24,10 @@ const BASE_PADDING = 16;
 const PADDING_WITH_ICON = BASE_PADDING + ICON_SIZES.md + ICON_SPACING;
 const ANIMATION_DURATION = 200;
 
-interface FormInputProps<T extends FieldValues>
-  extends Omit<TextInputProps, "value" | "onChangeText"> {
+interface FormInputProps<T extends FieldValues> extends Omit<
+  TextInputProps,
+  "value" | "onChangeText"
+> {
   control: Control<T>;
   name: Path<T>;
   rules?: RegisterOptions<T>;
@@ -77,7 +73,10 @@ export function FormInput<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
         <View className="mb-4">
           <View className="relative">
             {icon && (
@@ -112,6 +111,7 @@ export function FormInput<T extends FieldValues>({
               onChangeText={onChange}
               onBlur={() => {
                 setIsFocused(false);
+                passwordToggle.hide();
                 onBlur();
               }}
               onFocus={() => setIsFocused(true)}
@@ -120,10 +120,14 @@ export function FormInput<T extends FieldValues>({
                 border-2 rounded-lg pt-6 pb-2 text-text bg-input
                 ${error ? "border-error" : isFocused ? "border-primary" : "border-border"}
               `}
-              secureTextEntry={secureTextEntry && passwordToggle.secureTextEntry}
+              secureTextEntry={
+                secureTextEntry && passwordToggle.secureTextEntry
+              }
               style={{
                 paddingLeft: icon ? PADDING_WITH_ICON : BASE_PADDING,
-                paddingRight: secureTextEntry ? PADDING_WITH_ICON : BASE_PADDING,
+                paddingRight: secureTextEntry
+                  ? PADDING_WITH_ICON
+                  : BASE_PADDING,
               }}
               {...rest}
             />

@@ -9,10 +9,15 @@ export function usePasswordToggle() {
     setIsVisible((prev) => !prev);
     inputRef.current?.focus();
   };
+
+  const hide = () => {
+    setIsVisible(false);
+  };
   return {
     isVisible,
     inputRef,
     toggle,
+    hide,
     secureTextEntry: !isVisible,
   };
 }
