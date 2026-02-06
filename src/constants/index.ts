@@ -5,3 +5,4 @@ export * from "./toast";
 export * from "./routes";
 export * from "./theme";
 export * from "./sizes";
+export * from "./types";
