@@ -21,6 +21,8 @@ LostAndFoundNative/
 │   │   ├── auth.api.ts               # Auth API pozivi
 │   │   └── index.ts                  # Barrel export
 │   ├── components/
+│   │   ├── auth/                     # Auth-specific komponente
+│   │   │   └── AuthHeader.tsx        # Header za login/register ekrane
 │   │   ├── expo/                     # Expo template komponente
 │   │   │   ├── Collapsible.tsx
 │   │   │   ├── ExternalLink.tsx
@@ -30,10 +32,13 @@ LostAndFoundNative/
 │   │   │   ├── ThemedText.tsx
 │   │   │   └── ThemedView.tsx
 │   │   ├── forms/
-│   │   │   ├── FormInput.tsx         # RHF input wrapper
-│   │   │   └── FormCheckbox.tsx      # RHF checkbox wrapper
+│   │   │   ├── FormInput.tsx         # RHF input wrapper (floating label)
+│   │   │   ├── FormCheckbox.tsx      # RHF checkbox wrapper
+│   │   │   └── PasswordInput.tsx     # Password input sa show/hide toggle
 │   │   ├── ui/
 │   │   │   ├── Button.tsx            # Button komponenta
+│   │   │   ├── CurvedHeader.tsx      # Header sa zaobljenim ivicama
+│   │   │   ├── Divider.tsx           # Linija sa tekstom (OR divider)
 │   │   │   └── FullScreenLoader.tsx  # Loading spinner
 │   │   ├── modal/MessageModal.tsx    # Confirmation dialog
 │   │   └── toast/ToastConfig.tsx     # Toast stilovi
@@ -45,11 +50,14 @@ LostAndFoundNative/
 │   │   ├── storage.ts                # AsyncStorage ključevi
 │   │   ├── toast.ts                  # Toast konfiguracija
 │   │   ├── routes.ts                 # Route konfiguracija
-│   │   └── theme.ts                  # PALETA BOJA (jedan izvor istine)
+│   │   ├── theme.ts                  # PALETA BOJA (jedan izvor istine)
+│   │   ├── sizes.ts                  # ICON_SIZES i SPACING konstante
+│   │   └── types.ts                  # Zajednički tipovi (ComponentSize)
 │   ├── hooks/
 │   │   ├── useAuthGuard.ts           # Auth navigation guard
 │   │   ├── useColorScheme.ts         # React Native useColorScheme
-│   │   └── useThemeColor.ts          # Theme color resolver
+│   │   ├── useThemeColor.ts          # Theme color resolver
+│   │   └── usePasswordToggle.ts      # Password visibility toggle
 │   ├── services/
 │   │   ├── token.service.ts          # Token management
 │   │   └── toast.service.ts          # Toast wrapper
@@ -230,14 +238,14 @@ Novi tipovi se dodaju u `lost-and-found-api` paket:
 
 ```typescript
 import { useForm } from "react-hook-form";
-import { FormInput } from "../src/components/forms";
-import { VALIDATION_RULES } from "../src/constants";
-import { MyDTO } from "@lost-and-found/api";
+import { FormInput, PasswordInput } from "../src/components/forms";
+import { VALIDATION_RULES, AUTH_STRINGS } from "../src/constants";
+import { AuthRequestDTO } from "@lost-and-found/api";
 
-export default function MyScreen() {
-  const { control, handleSubmit } = useForm<MyDTO>();
+export default function LoginScreen() {
+  const { control, handleSubmit } = useForm<AuthRequestDTO>();
 
-  const onSubmit = async (data: MyDTO) => {
+  const onSubmit = async (data: AuthRequestDTO) => {
     // API poziv
   };
 
@@ -245,9 +253,16 @@ export default function MyScreen() {
     <View>
       <FormInput
         control={control}
-        name="fieldName"
-        placeholder="Placeholder"
-        rules={VALIDATION_RULES.fieldName}
+        name="email"
+        placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
+        rules={VALIDATION_RULES.email}
+        icon="envelope"
+      />
+      <PasswordInput
+        control={control}
+        name="password"
+        placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
+        rules={VALIDATION_RULES.password}
       />
       <Button title="Submit" onPress={handleSubmit(onSubmit)} />
     </View>
@@ -285,7 +300,10 @@ export const VALIDATION_RULES = {
 1. Dodaj DTO tip u `@lost-and-found/api` paket
 2. Dodaj string konstante u `src/constants/strings.ts`
 3. Dodaj validaciju u `src/constants/validation.ts`
-4. Koristi `<FormInput>` ili `<FormCheckbox>` sa pravilima
+4. Koristi odgovarajuću komponentu:
+   - `<FormInput>` - za tekst, email, broj...
+   - `<PasswordInput>` - za password polja
+   - `<FormCheckbox>` - za boolean/checkbox
 
 ### FormCheckbox Komponenta
 
@@ -321,13 +339,6 @@ Koristimo **FontAwesome** iz `@expo/vector-icons`:
   placeholder="Email"
   icon="envelope"  // FontAwesome ikona
 />
-
-<FormInput
-  control={control}
-  name="password"
-  placeholder="Password"
-  icon="lock"
-/>
 ```
 
 **Dostupne ikone:** [icons.expo.fyi](https://icons.expo.fyi) → filtriraj "FontAwesome"
@@ -340,6 +351,46 @@ Koristimo **FontAwesome** iz `@expo/vector-icons`:
 
 // ✅ Radi - koristi vrednosti iz palete
 <FontAwesome color={primary[500]} />
+```
+
+### PasswordInput Komponenta
+
+Za password polja **UVEK** koristi `PasswordInput` umesto `FormInput`:
+
+```tsx
+import { PasswordInput } from "../src/components/forms";
+
+<PasswordInput
+  control={control}
+  name="password"
+  placeholder="Password"
+  rules={VALIDATION_RULES.password}
+/>
+```
+
+**Ugrađene funkcionalnosti:**
+- Eye ikona za show/hide password
+- Lock ikona (hardcoded)
+- `autoComplete="password"`
+- `accessibilityLabel` za screen readers
+- Auto-hide password na blur (gubitak fokusa)
+- Focus ostaje na inputu nakon toggle-a
+
+### usePasswordToggle Hook
+
+Custom hook za password visibility (koristi se interno u PasswordInput):
+
+```tsx
+import { usePasswordToggle } from "../src/hooks";
+
+const passwordToggle = usePasswordToggle();
+
+// Dostupno:
+passwordToggle.isVisible      // boolean - da li je password vidljiv
+passwordToggle.inputRef       // ref za TextInput (za fokus)
+passwordToggle.toggle()       // funkcija za toggle + vraća fokus
+passwordToggle.hide()         // funkcija za sakrivanje (na blur)
+passwordToggle.secureTextEntry // boolean prop za TextInput
 ```
 
 ---
@@ -578,6 +629,52 @@ function RootLayoutNav() {
 
 ---
 
+## Auth Ekrani Layout
+
+### Struktura Login/Register ekrana
+
+```tsx
+<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+  <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <ScrollView keyboardShouldPersistTaps="handled">
+
+      {/* Header */}
+      <AuthHeader subtitle="..." size="sm" />
+
+      {/* Forma */}
+      <View className="px-6 pt-12">
+        <FormInput ... />
+        <PasswordInput ... />
+
+        {/* Forgot Password link (opciono) */}
+        <TouchableOpacity className="self-end my-4">
+          <Text className="text-primary">{AUTH_STRINGS.FORGOT_PASSWORD}</Text>
+        </TouchableOpacity>
+
+        <Button title="Sign In" ... />
+
+        <Divider text="OR" />
+
+        {/* Footer link */}
+        <View className="flex-row justify-center">
+          <Text className="text-text-secondary">{AUTH_STRINGS.NO_ACCOUNT}</Text>
+          <TouchableOpacity onPress={() => router.push("/register")}>
+            <Text className="text-primary ml-1">Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+    </ScrollView>
+  </KeyboardAvoidingView>
+</TouchableWithoutFeedback>
+```
+
+**Važno:**
+- `keyboardShouldPersistTaps="handled"` - omogućava klik na elemente dok je tastatura otvorena
+- `TouchableWithoutFeedback` sa `Keyboard.dismiss` - zatvara tastaturu na tap van inputa
+
+---
+
 ## Auth Flow (od A do Š)
 
 ### 1. App Pokretanje
@@ -730,6 +827,100 @@ className="border border-primary bg-transparent" // Outline
 
 ---
 
+## UI Komponente (src/components/ui/)
+
+### CurvedHeader
+
+Header sa zaobljenim donjim ivicama. Koristi `ComponentSize` tip za veličine.
+
+```tsx
+import { CurvedHeader } from "../src/components/ui";
+
+// Large (default)
+<CurvedHeader>
+  <Text>Sadržaj</Text>
+</CurvedHeader>
+
+// Small
+<CurvedHeader size="sm">
+  <Text>Sadržaj</Text>
+</CurvedHeader>
+```
+
+**Props:**
+| Prop | Tip | Default | Opis |
+|------|-----|---------|------|
+| `children` | ReactNode | - | Sadržaj headera |
+| `size` | `"sm" \| "lg"` | `"lg"` | Veličina (padding, border-radius) |
+
+### Divider
+
+Horizontalna linija sa opcionalnim tekstom (npr. "OR"):
+
+```tsx
+import { Divider } from "../src/components/ui";
+
+// Samo linija
+<Divider />
+
+// Linija sa tekstom
+<Divider text="OR" />
+<Divider text={COMMON_STRINGS.OR} />
+```
+
+### AuthHeader
+
+Kombinacija CurvedHeader-a sa branding elementima za auth ekrane:
+
+```tsx
+import { AuthHeader } from "../src/components/auth";
+
+<AuthHeader
+  subtitle="Welcome back! Sign in to continue"
+  size="sm"  // opciono, default "lg"
+/>
+```
+
+**Uključuje:**
+- CurvedHeader pozadina
+- Logo ikona u belom krugu
+- "Lost & Found" naslov
+- Podnaslov (prop)
+
+---
+
+## Zajednički Tipovi (src/constants/types.ts)
+
+### ComponentSize
+
+Standardni tip za veličine komponenti:
+
+```tsx
+import { ComponentSize } from "../src/constants";
+
+type ComponentSize = "sm" | "lg";
+
+// Korišćenje u komponenti
+interface MyComponentProps {
+  size?: ComponentSize;
+}
+```
+
+---
+
+## Size Konstante (src/constants/sizes.ts)
+
+```tsx
+import { ICON_SIZES } from "../src/constants";
+
+ICON_SIZES.sm  // 16
+ICON_SIZES.md  // 24
+ICON_SIZES.lg  // 32
+ICON_SIZES.xl  // 40
+```
+
+---
+
 ## Expo Komponente (src/components/expo/)
 
 | Komponenta | Namena |
@@ -747,10 +938,13 @@ className="border border-primary bg-transparent" // Outline
 ## Pravila
 
 1. **Boje** - UVEK iz palete, NIKAD hardcoded. Ako treba nova boja → dodaj u paletu
-2. **Forme** - Uvek koristi `react-hook-form` + `FormInput`
-3. **Validacija** - Pravila u `constants/validation.ts`, stringovi u `strings.ts`
-4. **API** - Greške se automatski prikazuju, NE ručno u catch bloku
-5. **Tipovi** - Importuj iz `@lost-and-found/api` paketa
-6. **Confirmation** - Za destructive akcije koristi `useMessage().confirm()`
-7. **Toast** - Za ručne notifikacije koristi `toastService`
-8. **Styling** - NativeWind klase, boje iz `src/constants/theme.ts`
+2. **Forme** - Uvek koristi `react-hook-form` + `FormInput` (ili `PasswordInput` za password)
+3. **Password polja** - UVEK koristi `PasswordInput`, NIKAD `FormInput` sa `secureTextEntry`
+4. **Validacija** - Pravila u `constants/validation.ts`, stringovi u `strings.ts`
+5. **API** - Greške se automatski prikazuju, NE ručno u catch bloku
+6. **Tipovi** - Importuj iz `@lost-and-found/api` paketa
+7. **Confirmation** - Za destructive akcije koristi `useMessage().confirm()`
+8. **Toast** - Za ručne notifikacije koristi `toastService`
+9. **Styling** - NativeWind klase, boje iz `src/constants/theme.ts`
+10. **Veličine ikona** - Koristi `ICON_SIZES` iz constants, ne hardcoded brojeve
+11. **Component sizes** - Koristi `ComponentSize` tip za size props
