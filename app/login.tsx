@@ -37,7 +37,11 @@ export default function LoginScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView className="flex-1" bounces={false}>
+        <ScrollView
+          className="flex-1"
+          bounces={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <AuthHeader subtitle={AUTH_STRINGS.LOGIN_HEADER_SUBTITLE} />
           <View className="px-6 pt-12">
             <FormInput
