@@ -22,6 +22,7 @@ export const AUTH_STRINGS = {
   LOGIN_ERROR: "Login failed",
   REGISTER_ERROR: "Registration failed",
   GENERIC_ERROR: "An error occurred",
+  TOKEN_SAVE_ERROR: "Failed to save authentication tokens",
   NO_ACCOUNT: "Don't have an account?",
   HAVE_ACCOUNT: "Already have an account?",
 } as const;

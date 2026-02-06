@@ -8,7 +8,15 @@ import React, {
 } from "react";
 import { authApi } from "../api";
 import { tokenService } from "../services";
+import { AUTH_STRINGS } from "../constants";
 import { AuthRequestDTO, AuthResponseDTO, RegisterRequestDTO } from "@lost-and-found/api";
+
+const saveAuthTokens = async (response: AuthResponseDTO): Promise<void> => {
+  const success = await tokenService.setTokens(response.token, response.refreshToken);
+  if (!success) {
+    throw new Error(AUTH_STRINGS.TOKEN_SAVE_ERROR);
+  }
+};
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -49,26 +57,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (data: AuthRequestDTO): Promise<AuthResponseDTO> => {
     const response = await authApi.login(data);
-    const result = response.data;
-    const success = await tokenService.setTokens(result.token, result.refreshToken);
-
-    if (!success) {
-      throw new Error("Failed to save authentication tokens");
-    }
-
-    return result;
+    await saveAuthTokens(response.data);
+    return response.data;
   }, []);
 
   const register = useCallback(async (data: RegisterRequestDTO): Promise<AuthResponseDTO> => {
     const response = await authApi.register(data);
-    const result = response.data;
-    const success = await tokenService.setTokens(result.token, result.refreshToken);
-
-    if (!success) {
-      throw new Error("Failed to save authentication tokens");
-    }
-
-    return result;
+    await saveAuthTokens(response.data);
+    return response.data;
   }, []);
 
   const logout = useCallback(async () => {
