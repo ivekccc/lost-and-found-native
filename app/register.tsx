@@ -6,19 +6,25 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from "react-native";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
 import { useAuth } from "../src/store/AuthContext";
 import { RegisterRequestDTO } from "@lost-and-found/api";
-import { FormInput, FormCheckbox } from "../src/components/forms";
-import { Button } from "../src/components/ui";
+import {
+  FormInput,
+  FormCheckbox,
+  PasswordInput,
+} from "../src/components/forms";
+import { Button, Divider } from "../src/components/ui";
 import {
   AUTH_STRINGS,
   VALIDATION_RULES,
   A11Y_STRINGS,
   LEGAL_STRINGS,
+  COMMON_STRINGS,
 } from "../src/constants";
 import { AuthHeader } from "../src/components/auth";
 
@@ -36,7 +42,6 @@ export default function RegisterScreen() {
     try {
       const { termsAccepted, ...registerData } = data;
       await registerUser(registerData);
-    } catch {
     } finally {
       setLoading(false);
     }
@@ -51,7 +56,7 @@ export default function RegisterScreen() {
         <ScrollView
           className="flex-1"
           bounces={false}
-          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps="handled"
         >
           <AuthHeader subtitle={AUTH_STRINGS.REGISTER_HEADER_SUBTITLE} />
           <View className="px-6 pt-12">
@@ -64,6 +69,7 @@ export default function RegisterScreen() {
               autoCapitalize="none"
               autoComplete="email"
               accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
+              icon="envelope"
             />
 
             <FormInput
@@ -74,17 +80,17 @@ export default function RegisterScreen() {
               autoCapitalize="none"
               autoComplete="username"
               accessibilityLabel={A11Y_STRINGS.USERNAME_INPUT}
+              icon="user"
             />
 
-            <FormInput
+            <PasswordInput
               control={control}
               name="password"
               placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
               rules={VALIDATION_RULES.password}
-              secureTextEntry
               autoComplete="new-password"
               accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
-            />
+            ></PasswordInput>
 
             <FormCheckbox
               control={control}
@@ -114,19 +120,24 @@ export default function RegisterScreen() {
               </Text>
             </FormCheckbox>
 
-            <View className="gap-3 mt-2">
+            <View className="gap-3 mt-4">
               <Button
                 title={AUTH_STRINGS.REGISTER_BUTTON}
                 onPress={handleSubmit(onSubmit)}
                 loading={loading}
                 accessibilityLabel={A11Y_STRINGS.REGISTER_BUTTON}
               />
-              <Button
-                title={AUTH_STRINGS.LOGIN_BUTTON}
-                onPress={() => router.back()}
-                variant="outline"
-                accessibilityLabel={A11Y_STRINGS.GO_TO_LOGIN}
-              />
+              <Divider text={COMMON_STRINGS.OR} />
+              <View className="flex-row justify-center">
+                <Text className="text-text-secondary">
+                  {AUTH_STRINGS.HAVE_ACCOUNT}
+                </Text>
+                <TouchableOpacity onPress={() => router.push("/login")}>
+                  <Text className="text-primary font-medium ml-1">
+                    {A11Y_STRINGS.GO_TO_LOGIN}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </ScrollView>
