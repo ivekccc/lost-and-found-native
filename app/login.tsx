@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
-import { useAuth } from "../src/store/AuthContext";
+import { authService } from "../src/services";
 import { AuthRequestDTO } from "@lost-and-found/api";
 import { AuthHeader } from "../src/components/auth";
 
@@ -25,14 +25,13 @@ import {
 } from "../src/constants";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<AuthRequestDTO>();
 
   const onSubmit = async (data: AuthRequestDTO) => {
     setLoading(true);
     try {
-      await login(data);
+      await authService.login(data);
     } finally {
       setLoading(false);
     }

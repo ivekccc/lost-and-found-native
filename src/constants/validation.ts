@@ -1,4 +1,4 @@
-import { AUTH_STRINGS, LEGAL_STRINGS } from "./strings";
+import { AUTH_STRINGS, LEGAL_STRINGS, VERIFY_STRINGS } from "./strings";
 
 // ===========================================
 // REGEX PATTERNS
@@ -28,6 +28,11 @@ export const VALIDATION_RULES = {
       value: 6,
       message: AUTH_STRINGS.PASSWORD_MIN_LENGTH,
     },
+  },
+  verificationCode: {
+    required: VERIFY_STRINGS.CODE_REQUIRED,
+    minLength: { value: 6, message: VERIFY_STRINGS.CODE_REQUIRED },
+    maxLength: { value: 6, message: VERIFY_STRINGS.CODE_REQUIRED },
   },
 
   firstName: {

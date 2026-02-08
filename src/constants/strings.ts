@@ -27,6 +27,19 @@ export const AUTH_STRINGS = {
   HAVE_ACCOUNT: "Already have an account?",
 } as const;
 
+export const VERIFY_STRINGS = {
+  TITLE: "Verification Code",
+  SUBTITLE_PREFIX: "We've sent a code to",
+  ENTER_CODE: "Enter the 6-digit code",
+  VERIFY_BUTTON: "Verify Code",
+  DIDNT_RECEIVE: "Didn't receive the code?",
+  RESEND_CODE: "Resend code",
+  RESEND_CODE_IN: "Resend code in",
+  BACK: "Back",
+  CODE_REQUIRED: "Please enter the complete code",
+  VERIFICATION_SUCCESS: "Registration successful",
+} as const;
+
 export const COMMON_STRINGS = {
   ERROR_TITLE: "Error",
   ERROR_GENERIC: "Something went wrong",
@@ -52,6 +65,10 @@ export const A11Y_STRINGS = {
   TERMS_CHECKBOX: "Accept terms of service and privacy policy",
   TERMS_LINK: "Open terms of service",
   PRIVACY_LINK: "Open privacy policy",
+  VERIFY_CODE_INPUT: "Verification code input",
+  VERIFY_BUTTON: "Verify code button",
+  RESEND_CODE_BUTTON: "Resend verification code",
+  BACK_BUTTON: "Go back",
 } as const;
 
 export const LEGAL_STRINGS = {

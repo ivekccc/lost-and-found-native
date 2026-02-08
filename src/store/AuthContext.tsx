@@ -3,27 +3,13 @@ import React, {
   useContext,
   useState,
   useEffect,
-  useCallback,
   ReactNode,
 } from "react";
-import { authApi } from "../api";
 import { tokenService } from "../services";
-import { AUTH_STRINGS } from "../constants";
-import { AuthRequestDTO, AuthResponseDTO, RegisterRequestDTO } from "@lost-and-found/api";
-
-const saveAuthTokens = async (response: AuthResponseDTO): Promise<void> => {
-  const success = await tokenService.setTokens(response.token, response.refreshToken);
-  if (!success) {
-    throw new Error(AUTH_STRINGS.TOKEN_SAVE_ERROR);
-  }
-};
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (data: AuthRequestDTO) => Promise<AuthResponseDTO>;
-  register: (data: RegisterRequestDTO) => Promise<AuthResponseDTO>;
-  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,24 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  const login = useCallback(async (data: AuthRequestDTO): Promise<AuthResponseDTO> => {
-    const response = await authApi.login(data);
-    await saveAuthTokens(response.data);
-    return response.data;
-  }, []);
-
-  const register = useCallback(async (data: RegisterRequestDTO): Promise<AuthResponseDTO> => {
-    const response = await authApi.register(data);
-    await saveAuthTokens(response.data);
-    return response.data;
-  }, []);
-
-  const logout = useCallback(async () => {
-    await tokenService.clearTokens();
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

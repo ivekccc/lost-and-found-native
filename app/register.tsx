@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { router } from "expo-router";
-import { useAuth } from "../src/store/AuthContext";
+import { authService } from "../src/services";
 import { RegisterRequestDTO } from "@lost-and-found/api";
 import {
   FormInput,
@@ -25,6 +25,7 @@ import {
   A11Y_STRINGS,
   LEGAL_STRINGS,
   COMMON_STRINGS,
+  ROUTES,
 } from "../src/constants";
 import { AuthHeader } from "../src/components/auth";
 
@@ -33,7 +34,6 @@ interface RegisterFormData extends RegisterRequestDTO {
 }
 
 export default function RegisterScreen() {
-  const { register: registerUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const { control, handleSubmit } = useForm<RegisterFormData>();
 
@@ -41,7 +41,8 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       const { termsAccepted, ...registerData } = data;
-      await registerUser(registerData);
+      await authService.register(registerData);
+      router.push(`/${ROUTES.VERIFY}?email=${encodeURIComponent(data.email)}`);
     } finally {
       setLoading(false);
     }

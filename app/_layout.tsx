@@ -32,7 +32,11 @@ function RootLayoutNav() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name={ROUTES.LOGIN} options={{ headerShown: false }} />
-          <Stack.Screen name={ROUTES.REGISTER} options={{ headerShown: false }} />
+          <Stack.Screen name={ROUTES.VERIFY} options={{ headerShown: false }} />
+          <Stack.Screen
+            name={ROUTES.REGISTER}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name={ROUTES.TABS} options={{ headerShown: false }} />
           <Stack.Screen
             name={ROUTES.TERMS}

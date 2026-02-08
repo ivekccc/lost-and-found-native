@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
 import { http } from '../../src/api';
-import { useAuth } from '../../src/store/AuthContext';
 import { useMessage } from '../../src/store/MessageContext';
 import { Button } from '../../src/components/ui';
-import { toastService } from '../../src/services';
+import { authService, toastService } from '../../src/services';
 
 export default function HomeScreen() {
   const [secretMessage, setSecretMessage] = useState<string | null>(null);
-  const { logout } = useAuth();
   const { confirm } = useMessage();
 
   const fetchSecret = async () => {
@@ -29,7 +27,7 @@ export default function HomeScreen() {
       cancelText: 'No',
     });
     if (confirmed) {
-      await logout();
+      await authService.logout();
     }
   };
 

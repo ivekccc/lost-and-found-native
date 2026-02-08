@@ -1,6 +1,7 @@
 export const ROUTES = {
   LOGIN: "login",
   REGISTER: "register",
+  VERIFY: "verify",
   TABS: "(tabs)",
   TERMS: "terms",
   PRIVACY: "privacy",
@@ -9,6 +10,7 @@ export const ROUTES = {
 export const PUBLIC_ROUTES: readonly string[] = [
   ROUTES.LOGIN,
   ROUTES.REGISTER,
+  ROUTES.VERIFY,
   ROUTES.TERMS,
   ROUTES.PRIVACY,
 ];
@@ -16,6 +18,7 @@ export const PUBLIC_ROUTES: readonly string[] = [
 export const AUTH_ROUTES: readonly string[] = [
   ROUTES.LOGIN,
   ROUTES.REGISTER,
+  ROUTES.VERIFY,
 ];
 
 export type RouteName = (typeof ROUTES)[keyof typeof ROUTES];
