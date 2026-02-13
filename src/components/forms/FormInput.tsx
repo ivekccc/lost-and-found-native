@@ -24,12 +24,15 @@ const BASE_PADDING = 16;
 const PADDING_WITH_ICON = BASE_PADDING + ICON_SIZES.md + ICON_SPACING;
 const ANIMATION_DURATION = 200;
 
-interface FormInputProps<T extends FieldValues>
-  extends Omit<TextInputProps, "value" | "onChangeText"> {
+interface FormInputProps<T extends FieldValues> extends Omit<
+  TextInputProps,
+  "value" | "onChangeText"
+> {
   control: Control<T>;
   name: Path<T>;
   rules?: RegisterOptions<T>;
   icon?: React.ComponentProps<typeof FontAwesome>["name"];
+  disabled?: boolean;
 }
 
 export function FormInput<T extends FieldValues>({
@@ -38,6 +41,7 @@ export function FormInput<T extends FieldValues>({
   rules,
   placeholder,
   icon,
+  disabled,
   ...rest
 }: FormInputProps<T>) {
   const [isFocused, setIsFocused] = useState(false);
@@ -69,8 +73,11 @@ export function FormInput<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-        <View className="mb-4">
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
+        <View className={`mb-4 ${disabled ? "opacity-50" : ""}`}>
           <View className="relative">
             {icon && (
               <FontAwesome
@@ -107,6 +114,7 @@ export function FormInput<T extends FieldValues>({
               }}
               onFocus={() => setIsFocused(true)}
               value={value}
+              editable={!disabled}
               className={`
                 border-2 rounded-lg pt-6 pb-2 text-text bg-input
                 ${error ? "border-error" : isFocused ? "border-primary" : "border-border"}

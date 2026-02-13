@@ -239,14 +239,15 @@ Novi tipovi se dodaju u `lost-and-found-api` paket:
 ```typescript
 import { useForm } from "react-hook-form";
 import { FormInput, PasswordInput } from "../src/components/forms";
+import { Button } from "../src/components/ui";
 import { VALIDATION_RULES, AUTH_STRINGS } from "../src/constants";
 import { AuthRequestDTO } from "@lost-and-found/api";
 
 export default function LoginScreen() {
-  const { control, handleSubmit } = useForm<AuthRequestDTO>();
+  const { control, handleSubmit, formState } = useForm<AuthRequestDTO>();
 
   const onSubmit = async (data: AuthRequestDTO) => {
-    // API poziv
+    await authService.login(data);
   };
 
   return (
@@ -257,14 +258,20 @@ export default function LoginScreen() {
         placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
         rules={VALIDATION_RULES.email}
         icon="envelope"
+        disabled={formState.isSubmitting}
       />
       <PasswordInput
         control={control}
         name="password"
         placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
         rules={VALIDATION_RULES.password}
+        disabled={formState.isSubmitting}
       />
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      <Button
+        title="Submit"
+        onPress={handleSubmit(onSubmit)}
+        loading={formState.isSubmitting}
+      />
     </View>
   );
 }
@@ -327,6 +334,80 @@ Za boolean polja (checkboxes) koristi `FormCheckbox`:
 - **Dark mode** - koristi `bg-input` i boje iz palete
 - **Animacija** - `react-native-reanimated` (UI thread, bez lag-a)
 - **Ikona** - opciona ikona na početku polja
+- **Disabled state** - `opacity-50` + `editable={false}`
+
+### Disable Forme Tokom Submita (VAŽNO!)
+
+**NIKAD ne koristi ručni `useState` za loading state forme.** Koristi ugrađeni `formState.isSubmitting` iz react-hook-form.
+
+```tsx
+// ❌ POGREŠNO - ručni loading state
+const [loading, setLoading] = useState(false);
+const { control, handleSubmit } = useForm<MyDTO>();
+
+const onSubmit = async (data: MyDTO) => {
+  setLoading(true);
+  try {
+    await api.submit(data);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ✅ ISPRAVNO - koristi formState.isSubmitting
+const { control, handleSubmit, formState } = useForm<MyDTO>();
+
+const onSubmit = async (data: MyDTO) => {
+  await api.submit(data);  // isSubmitting se automatski upravlja
+};
+```
+
+**Sve form komponente podržavaju `disabled` prop:**
+
+```tsx
+<FormInput
+  control={control}
+  name="email"
+  disabled={formState.isSubmitting}
+  // ...
+/>
+
+<PasswordInput
+  control={control}
+  name="password"
+  disabled={formState.isSubmitting}
+  // ...
+/>
+
+<FormCheckbox
+  control={control}
+  name="termsAccepted"
+  disabled={formState.isSubmitting}
+  // ...
+/>
+
+<Button
+  title="Submit"
+  onPress={handleSubmit(onSubmit)}
+  loading={formState.isSubmitting}
+/>
+```
+
+**Šta se dešava kada je `disabled={true}`:**
+
+| Komponenta | Ponašanje |
+|------------|-----------|
+| `FormInput` | `opacity-50`, `editable={false}` |
+| `PasswordInput` | `opacity-50`, `editable={false}`, eye toggle disabled |
+| `FormCheckbox` | `opacity-50`, Pressable disabled |
+| `Button` | Prikazuje loading spinner |
+
+**Zašto `formState.isSubmitting`?**
+
+- Automatski se postavlja na `true` kada počne `handleSubmit`
+- Automatski se vraća na `false` kada se `onSubmit` završi (success ili error)
+- Nema potrebe za `try/finally` blokovima
+- Manje koda, manje bug-ova
 
 ### FormInput sa Ikonom
 
@@ -784,8 +865,10 @@ Potvrđeno?
 
 ### 5. Forma (ako treba)
 
-- [ ] Koristi `useForm<DTO>()`
+- [ ] Koristi `useForm<DTO>()` sa `formState` destrukturiranjem
 - [ ] Koristi `<FormInput>` sa `rules={VALIDATION_RULES.field}`
+- [ ] Dodaj `disabled={formState.isSubmitting}` na sve form komponente
+- [ ] Dodaj `loading={formState.isSubmitting}` na submit Button
 
 ### 6. Error Handling
 
@@ -948,3 +1031,4 @@ ICON_SIZES.xl  // 40
 9. **Styling** - NativeWind klase, boje iz `src/constants/theme.ts`
 10. **Veličine ikona** - Koristi `ICON_SIZES` iz constants, ne hardcoded brojeve
 11. **Component sizes** - Koristi `ComponentSize` tip za size props
+12. **Form loading state** - UVEK koristi `formState.isSubmitting`, NIKAD ručni `useState` za loading. Sve form komponente imaju `disabled` prop koji treba povezati sa `formState.isSubmitting`

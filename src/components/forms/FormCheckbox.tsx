@@ -15,6 +15,7 @@ interface FormCheckboxProps<T extends FieldValues> {
   rules?: RegisterOptions<T>;
   children: ReactNode;
   accessibilityLabel?: string;
+  disabled?: boolean;
 }
 
 export function FormCheckbox<T extends FieldValues>({
@@ -23,6 +24,7 @@ export function FormCheckbox<T extends FieldValues>({
   rules,
   children,
   accessibilityLabel,
+  disabled,
 }: FormCheckboxProps<T>) {
   return (
     <Controller
@@ -30,13 +32,14 @@ export function FormCheckbox<T extends FieldValues>({
       name={name}
       rules={rules}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <View className="mb-4">
+        <View className={`mb-4 ${disabled ? "opacity-50" : ""}`}>
           <Pressable
             onPress={() => onChange(!value)}
             className="flex-row items-start gap-3"
             accessibilityRole="checkbox"
             accessibilityState={{ checked: !!value }}
             accessibilityLabel={accessibilityLabel}
+            disabled={disabled}
           >
             <View
               className={`

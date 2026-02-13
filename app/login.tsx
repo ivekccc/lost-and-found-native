@@ -9,7 +9,6 @@ import {
   Text,
 } from "react-native";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { router } from "expo-router";
 import { authService } from "../src/services";
 import { AuthRequestDTO } from "@lost-and-found/api";
@@ -25,16 +24,10 @@ import {
 } from "../src/constants";
 
 export default function LoginScreen() {
-  const [loading, setLoading] = useState(false);
-  const { control, handleSubmit } = useForm<AuthRequestDTO>();
+  const { control, handleSubmit, formState } = useForm<AuthRequestDTO>();
 
   const onSubmit = async (data: AuthRequestDTO) => {
-    setLoading(true);
-    try {
-      await authService.login(data);
-    } finally {
-      setLoading(false);
-    }
+    await authService.login(data);
   };
 
   return (
@@ -60,6 +53,7 @@ export default function LoginScreen() {
               autoComplete="email"
               accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
               icon="envelope"
+              disabled={formState.isSubmitting}
             />
 
             <PasswordInput
@@ -67,6 +61,7 @@ export default function LoginScreen() {
               name="password"
               placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
               rules={VALIDATION_RULES.password}
+              disabled={formState.isSubmitting}
             />
 
             <TouchableOpacity className="self-end my-4">
@@ -79,7 +74,7 @@ export default function LoginScreen() {
               <Button
                 title={AUTH_STRINGS.LOGIN_BUTTON}
                 onPress={handleSubmit(onSubmit)}
-                loading={loading}
+                loading={formState.isSubmitting}
                 accessibilityLabel={A11Y_STRINGS.LOGIN_BUTTON}
               />
               <Divider text={COMMON_STRINGS.OR} />

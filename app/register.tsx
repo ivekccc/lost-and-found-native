@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { router } from "expo-router";
 import { authService } from "../src/services";
 import { RegisterRequestDTO } from "@lost-and-found/api";
@@ -34,18 +33,16 @@ interface RegisterFormData extends RegisterRequestDTO {
 }
 
 export default function RegisterScreen() {
-  const [loading, setLoading] = useState(false);
-  const { control, handleSubmit } = useForm<RegisterFormData>();
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<RegisterFormData>();
 
   const onSubmit = async (data: RegisterFormData) => {
-    setLoading(true);
-    try {
-      const { termsAccepted, ...registerData } = data;
-      await authService.register(registerData);
-      router.push(`/${ROUTES.VERIFY}?email=${encodeURIComponent(data.email)}`);
-    } finally {
-      setLoading(false);
-    }
+    const { termsAccepted, ...registerData } = data;
+    await authService.register(registerData);
+    router.push(`/${ROUTES.VERIFY}?email=${encodeURIComponent(data.email)}`);
   };
 
   return (
@@ -71,6 +68,7 @@ export default function RegisterScreen() {
               autoComplete="email"
               accessibilityLabel={A11Y_STRINGS.EMAIL_INPUT}
               icon="envelope"
+              disabled={isSubmitting}
             />
 
             <FormInput
@@ -82,6 +80,7 @@ export default function RegisterScreen() {
               autoComplete="username"
               accessibilityLabel={A11Y_STRINGS.USERNAME_INPUT}
               icon="user"
+              disabled={isSubmitting}
             />
 
             <PasswordInput
@@ -91,6 +90,7 @@ export default function RegisterScreen() {
               rules={VALIDATION_RULES.password}
               autoComplete="new-password"
               accessibilityLabel={A11Y_STRINGS.PASSWORD_INPUT}
+              disabled={isSubmitting}
             ></PasswordInput>
 
             <FormCheckbox
@@ -98,6 +98,7 @@ export default function RegisterScreen() {
               name="termsAccepted"
               rules={VALIDATION_RULES.termsAccepted}
               accessibilityLabel={A11Y_STRINGS.TERMS_CHECKBOX}
+              disabled={isSubmitting}
             >
               <Text className="text-sm text-text-secondary leading-5">
                 {LEGAL_STRINGS.TERMS_CHECKBOX_PREFIX}
@@ -125,7 +126,7 @@ export default function RegisterScreen() {
               <Button
                 title={AUTH_STRINGS.REGISTER_BUTTON}
                 onPress={handleSubmit(onSubmit)}
-                loading={loading}
+                loading={isSubmitting}
                 accessibilityLabel={A11Y_STRINGS.REGISTER_BUTTON}
               />
               <Divider text={COMMON_STRINGS.OR} />
@@ -133,7 +134,10 @@ export default function RegisterScreen() {
                 <Text className="text-text-secondary">
                   {AUTH_STRINGS.HAVE_ACCOUNT}
                 </Text>
-                <TouchableOpacity onPress={() => router.push("/login")}>
+                <TouchableOpacity
+                  disabled={isSubmitting}
+                  onPress={() => router.push("/login")}
+                >
                   <Text className="text-primary font-medium ml-1">
                     {A11Y_STRINGS.GO_TO_LOGIN}
                   </Text>

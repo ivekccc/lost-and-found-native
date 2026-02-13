@@ -15,7 +15,13 @@ import Animated, {
 } from "react-native-reanimated";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useColorScheme, usePasswordToggle } from "../../hooks";
-import { primary, lightTheme, darkTheme, ICON_SIZES, A11Y_STRINGS } from "../../constants";
+import {
+  primary,
+  lightTheme,
+  darkTheme,
+  ICON_SIZES,
+  A11Y_STRINGS,
+} from "../../constants";
 
 const LABEL_POSITION = { unfocused: 16, focused: 4 };
 const LABEL_FONT_SIZE = { unfocused: 14, focused: 11 };
@@ -24,12 +30,15 @@ const BASE_PADDING = 16;
 const PADDING_WITH_ICON = BASE_PADDING + ICON_SIZES.md + ICON_SPACING;
 const ANIMATION_DURATION = 200;
 
-interface PasswordInputProps<T extends FieldValues>
-  extends Omit<TextInputProps, "value" | "onChangeText" | "secureTextEntry"> {
+interface PasswordInputProps<T extends FieldValues> extends Omit<
+  TextInputProps,
+  "value" | "onChangeText" | "secureTextEntry"
+> {
   control: Control<T>;
   name: Path<T>;
   placeholder: string;
   rules?: RegisterOptions<T>;
+  disabled?: boolean;
 }
 
 export function PasswordInput<T extends FieldValues>({
@@ -37,6 +46,7 @@ export function PasswordInput<T extends FieldValues>({
   name,
   placeholder,
   rules,
+  disabled,
   ...rest
 }: PasswordInputProps<T>) {
   const [isFocused, setIsFocused] = useState(false);
@@ -69,8 +79,11 @@ export function PasswordInput<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-        <View className="mb-4">
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
+        <View className={`mb-4 ${disabled ? "opacity-50" : ""}`}>
           <View className="relative">
             <FontAwesome
               name="lock"
@@ -107,6 +120,7 @@ export function PasswordInput<T extends FieldValues>({
               }}
               onFocus={() => setIsFocused(true)}
               value={value}
+              editable={!disabled}
               className={`
                 border-2 rounded-lg pt-6 pb-2 text-text bg-input
                 ${error ? "border-error" : isFocused ? "border-primary" : "border-border"}
@@ -122,6 +136,7 @@ export function PasswordInput<T extends FieldValues>({
             />
             <Pressable
               onPress={passwordToggle.toggle}
+              disabled={disabled}
               accessibilityLabel={
                 passwordToggle.isVisible ? "Hide password" : "Show password"
               }
