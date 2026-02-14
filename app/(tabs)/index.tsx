@@ -21,7 +21,7 @@ export default function HomeScreen() {
         subtitle={HOME_STRINGS.SUBTITLE}
       />
       <View className="flex-1 items-center" style={styles.cardsContainer}>
-        <View className="w-[85%]" style={styles.cardWrapper}>
+        <View className="w-[90%]" style={styles.cardWrapper}>
           <ActionCard
             icon="search-minus"
             title={HOME_STRINGS.LOST_TITLE}
@@ -30,7 +30,7 @@ export default function HomeScreen() {
             onPress={handleLostPress}
           />
         </View>
-        <View className="w-[85%]">
+        <View className="w-[90%]">
           <ActionCard
             icon="search-plus"
             title={HOME_STRINGS.FOUND_TITLE}

@@ -1,15 +1,35 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView, RefreshControl } from "react-native";
 
 import { CurvedHeader } from "../../src/components/ui";
 import { TAB_STRINGS } from "../../src/constants/strings";
+import { useReports } from "../../src/hooks/useReports";
+import { ReportType } from "@lost-and-found/api";
 
 export default function LostScreen() {
+  const { data, isLoading, isError, error, refetch, isRefetching } = useReports(
+    { type: ReportType.LOST },
+  );
+
   return (
     <View className="flex-1 bg-background">
-      <CurvedHeader title={TAB_STRINGS.LOST} size="sm" />
-      <View className="flex-1 items-center justify-center p-4">
-        <Text className="text-text-muted">Lost items coming soon</Text>
-      </View>
+      <CurvedHeader title={TAB_STRINGS.FOUND} size="sm" />
+
+      <ScrollView
+        className="flex-1 p-4"
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
+      >
+        {isLoading && <Text className="text-text-muted">Loading...</Text>}
+
+        {isError && <Text className="text-error">Error: {error.message}</Text>}
+
+        {data && (
+          <Text className="text-text font-mono text-xs">
+            {JSON.stringify(data, null, 2)}
+          </Text>
+        )}
+      </ScrollView>
     </View>
   );
 }

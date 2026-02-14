@@ -16,6 +16,7 @@ import { MessageProvider } from "../src/store/MessageContext";
 import { toastConfig } from "../src/components/toast";
 import { FullScreenLoader } from "../src/components/ui";
 import { ROUTES, LEGAL_STRINGS, themes } from "../src/constants";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -27,30 +28,49 @@ function RootLayoutNav() {
 
   const activeTheme = colorScheme === "dark" ? themes.dark : themes.light;
 
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: true,
+        retry: 1,
+      },
+    },
+  });
+
   return (
-    <View style={[{ flex: 1 }, activeTheme]}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name={ROUTES.LOGIN} options={{ headerShown: false }} />
-          <Stack.Screen name={ROUTES.VERIFY} options={{ headerShown: false }} />
-          <Stack.Screen
-            name={ROUTES.REGISTER}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name={ROUTES.TABS} options={{ headerShown: false }} />
-          <Stack.Screen
-            name={ROUTES.TERMS}
-            options={{ title: LEGAL_STRINGS.TERMS_TITLE }}
-          />
-          <Stack.Screen
-            name={ROUTES.PRIVACY}
-            options={{ title: LEGAL_STRINGS.PRIVACY_TITLE }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-        <Toast config={toastConfig} />
-      </ThemeProvider>
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <View style={[{ flex: 1 }, activeTheme]}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen
+              name={ROUTES.LOGIN}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name={ROUTES.VERIFY}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name={ROUTES.REGISTER}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name={ROUTES.TABS} options={{ headerShown: false }} />
+            <Stack.Screen
+              name={ROUTES.TERMS}
+              options={{ title: LEGAL_STRINGS.TERMS_TITLE }}
+            />
+            <Stack.Screen
+              name={ROUTES.PRIVACY}
+              options={{ title: LEGAL_STRINGS.PRIVACY_TITLE }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+          <Toast config={toastConfig} />
+        </ThemeProvider>
+      </View>
+    </QueryClientProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { tokenService, toastService } from "../services";
+import { tokenService } from "../services/token.service";
+import { toastService } from "../services/toast.service";
 import { COMMON_STRINGS } from "../constants";
 
 const API_BASE_URL = "http://localhost:8082";
