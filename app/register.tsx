@@ -17,7 +17,7 @@ import {
   FormCheckbox,
   PasswordInput,
 } from "../src/components/forms";
-import { Button, Divider } from "../src/components/ui";
+import { Button, Divider, CurvedHeader } from "../src/components/ui";
 import {
   AUTH_STRINGS,
   VALIDATION_RULES,
@@ -26,7 +26,6 @@ import {
   COMMON_STRINGS,
   ROUTES,
 } from "../src/constants";
-import { AuthHeader } from "../src/components/auth";
 
 interface RegisterFormData extends RegisterRequestDTO {
   termsAccepted: boolean;
@@ -56,7 +55,11 @@ export default function RegisterScreen() {
           bounces={false}
           keyboardShouldPersistTaps="handled"
         >
-          <AuthHeader subtitle={AUTH_STRINGS.REGISTER_HEADER_SUBTITLE} />
+          <CurvedHeader
+              icon="search"
+              title="Lost & Found"
+              subtitle={AUTH_STRINGS.REGISTER_HEADER_SUBTITLE}
+            />
           <View className="px-6 pt-12">
             <FormInput
               control={control}

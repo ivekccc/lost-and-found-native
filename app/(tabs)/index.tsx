@@ -6,9 +6,7 @@ import { TAB_STRINGS } from "../../src/constants/strings";
 export default function HomeScreen() {
   return (
     <View className="flex-1 bg-background">
-      <CurvedHeader size="sm">
-        <Text className="text-2xl font-bold text-white">{TAB_STRINGS.HOME}</Text>
-      </CurvedHeader>
+      <CurvedHeader title={TAB_STRINGS.HOME} size="sm" />
       <View className="flex-1 items-center justify-center p-4">
         <Text className="text-text-muted">Home content coming soon</Text>
       </View>

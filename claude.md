@@ -24,8 +24,6 @@ LostAndFoundNative/
 │   │   ├── auth.api.ts               # Auth API pozivi
 │   │   └── index.ts                  # Barrel export
 │   ├── components/
-│   │   ├── auth/                     # Auth-specific komponente
-│   │   │   └── AuthHeader.tsx        # Header za login/register ekrane
 │   │   ├── expo/                     # Expo template komponente
 │   │   │   ├── Collapsible.tsx
 │   │   │   ├── ExternalLink.tsx
@@ -734,7 +732,7 @@ function RootLayoutNav() {
     <ScrollView keyboardShouldPersistTaps="handled">
 
       {/* Header */}
-      <AuthHeader subtitle="..." size="sm" />
+      <CurvedHeader icon="search" title="Lost & Found" subtitle="..." />
 
       {/* Forma */}
       <View className="px-6 pt-12">
@@ -922,9 +920,7 @@ import { TAB_STRINGS } from "../../src/constants/strings";
 export default function HomeScreen() {
   return (
     <View className="flex-1 bg-background">
-      <CurvedHeader size="sm">
-        <Text className="text-2xl font-bold text-white">{TAB_STRINGS.HOME}</Text>
-      </CurvedHeader>
+      <CurvedHeader title={TAB_STRINGS.HOME} size="sm" />
       <View className="flex-1 items-center justify-center p-4">
         {/* Sadržaj ekrana */}
       </View>
@@ -1013,26 +1009,28 @@ className="border border-primary bg-transparent" // Outline
 
 ### CurvedHeader
 
-Header sa zaobljenim donjim ivicama. Koristi `ComponentSize` tip za veličine.
+Header sa zaobljenim donjim ivicama, opcionalnom ikonom i podnaslovom.
 
 ```tsx
 import { CurvedHeader } from "../src/components/ui";
 
-// Large (default)
-<CurvedHeader>
-  <Text>Sadržaj</Text>
-</CurvedHeader>
+// Samo naslov
+<CurvedHeader title="Home" size="sm" />
 
-// Small
-<CurvedHeader size="sm">
-  <Text>Sadržaj</Text>
-</CurvedHeader>
+// Sa ikonom i podnaslovom (auth ekrani)
+<CurvedHeader
+  icon="search"
+  title="Lost & Found"
+  subtitle="Welcome back!"
+/>
 ```
 
 **Props:**
 | Prop | Tip | Default | Opis |
 |------|-----|---------|------|
-| `children` | ReactNode | - | Sadržaj headera |
+| `title` | string | (required) | Naslov headera |
+| `subtitle` | string | - | Podnaslov (opciono) |
+| `icon` | FontAwesome name | - | Ikona u belom krugu (opciono) |
 | `size` | `"sm" \| "lg"` | `"lg"` | Veličina (padding, border-radius) |
 
 ### Divider
@@ -1049,25 +1047,6 @@ import { Divider } from "../src/components/ui";
 <Divider text="OR" />
 <Divider text={COMMON_STRINGS.OR} />
 ```
-
-### AuthHeader
-
-Kombinacija CurvedHeader-a sa branding elementima za auth ekrane:
-
-```tsx
-import { AuthHeader } from "../src/components/auth";
-
-<AuthHeader
-  subtitle="Welcome back! Sign in to continue"
-  size="sm"  // opciono, default "lg"
-/>
-```
-
-**Uključuje:**
-- CurvedHeader pozadina
-- Logo ikona u belom krugu
-- "Lost & Found" naslov
-- Podnaslov (prop)
 
 ---
 

@@ -12,10 +12,9 @@ import { useForm } from "react-hook-form";
 import { router } from "expo-router";
 import { authService } from "../src/services";
 import { AuthRequestDTO } from "@lost-and-found/api";
-import { AuthHeader } from "../src/components/auth";
 
 import { FormInput, PasswordInput } from "../src/components/forms";
-import { Button, Divider } from "../src/components/ui";
+import { Button, Divider, CurvedHeader } from "../src/components/ui";
 import {
   AUTH_STRINGS,
   VALIDATION_RULES,
@@ -41,7 +40,11 @@ export default function LoginScreen() {
           bounces={false}
           keyboardShouldPersistTaps="handled"
         >
-          <AuthHeader subtitle={AUTH_STRINGS.LOGIN_HEADER_SUBTITLE} />
+          <CurvedHeader
+              icon="search"
+              title="Lost & Found"
+              subtitle={AUTH_STRINGS.LOGIN_HEADER_SUBTITLE}
+            />
           <View className="px-6 pt-12">
             <FormInput
               control={control}

@@ -1,11 +1,13 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Text, TouchableOpacity, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+
 import { useCountdown } from "../src/hooks";
 import { authService, toastService } from "../src/services";
 import { VERIFY_STRINGS, ROUTES, A11Y_STRINGS } from "../src/constants";
-import { Text, TouchableOpacity, View } from "react-native";
-import { Button, VerifyHeader } from "../src/components";
+import { Button, CurvedHeader } from "../src/components/ui";
 import { CodeInput } from "../src/components/forms/CodeInput";
 
 const RESEND_COOLDOWN = 60;
@@ -36,6 +38,7 @@ export default function VerifyCodeScreen() {
       setLoading(false);
     }
   };
+
   const handleResend = async () => {
     // if (!isFinished) return;
     // try {
@@ -46,9 +49,25 @@ export default function VerifyCodeScreen() {
     //   // Error handled by interceptor
     // }
   };
+
   return (
     <View className="flex-1 bg-background">
-      <VerifyHeader email={email || ""} />
+      <CurvedHeader
+        icon="envelope"
+        title={VERIFY_STRINGS.TITLE}
+        subtitle={`${VERIFY_STRINGS.SUBTITLE_PREFIX} ${email || ""}`}
+        size="sm"
+      />
+
+      {/* Back button */}
+      <TouchableOpacity
+        onPress={() => router.back()}
+        className="absolute top-12 left-6 flex-row items-center"
+        accessibilityLabel={A11Y_STRINGS.BACK_BUTTON}
+      >
+        <FontAwesome name="arrow-left" size={16} color="white" />
+        <Text className="text-white ml-2 font-medium">{VERIFY_STRINGS.BACK}</Text>
+      </TouchableOpacity>
 
       <View className="px-6 pt-12">
         <Text className="text-text-secondary text-center mb-6">
