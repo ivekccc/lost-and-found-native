@@ -81,3 +81,11 @@ export const LEGAL_STRINGS = {
   TERMS_REQUIRED: "You must accept the terms to continue",
   LAST_UPDATED: "Last updated",
 } as const;
+
+export const TAB_STRINGS = {
+  HOME: "Home",
+  LOST: "Lost",
+  CREATE: "Create",
+  FOUND: "Found",
+  PROFILE: "Profile",
+} as const;
