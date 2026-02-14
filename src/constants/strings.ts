@@ -93,4 +93,8 @@ export const TAB_STRINGS = {
 export const HOME_STRINGS = {
   TITLE: "Welcome!",
   SUBTITLE: "How can we help you today?",
+  LOST_TITLE: "I lost something!",
+  LOST_SUBTITLE: "I want to find it",
+  FOUND_TITLE: "I found something!",
+  FOUND_SUBTITLE: "I want to report it",
 } as const;
