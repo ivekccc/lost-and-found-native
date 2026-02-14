@@ -89,3 +89,8 @@ export const TAB_STRINGS = {
   FOUND: "Found",
   PROFILE: "Profile",
 } as const;
+
+export const HOME_STRINGS = {
+  TITLE: "Welcome!",
+  SUBTITLE: "How can we help you today?",
+} as const;
