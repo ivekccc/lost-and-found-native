@@ -11,10 +11,13 @@ LostAndFoundNative/
 │   ├── register.tsx                  # Register ekran + terms checkbox
 │   ├── terms.tsx                     # Terms of Service ekran
 │   ├── privacy.tsx                   # Privacy Policy ekran
-│   └── (tabs)/                       # Zaštićene rute
+│   └── (tabs)/                       # Zaštićene rute (Tab navigator)
 │       ├── _layout.tsx               # Tab konfiguracija
-│       ├── index.tsx                 # Home
-│       └── explore.tsx               # Explore
+│       ├── index.tsx                 # Home tab
+│       ├── lost.tsx                  # Lost items tab
+│       ├── create.tsx                # Create listing tab
+│       ├── found.tsx                 # Found items tab
+│       └── profile.tsx               # Profile tab
 ├── src/
 │   ├── api/
 │   │   ├── http.ts                   # Axios instanca + interceptori
@@ -643,6 +646,14 @@ export const LEGAL_STRINGS = {
   PRIVACY_LINK: "Privacy Policy",
   TERMS_REQUIRED: "You must accept the terms to continue",
 } as const;
+
+export const TAB_STRINGS = {
+  HOME: "Home",
+  LOST: "Lost",
+  CREATE: "Create",
+  FOUND: "Found",
+  PROFILE: "Profile",
+} as const;
 ```
 
 ### Dodavanje Novih Stringova
@@ -670,14 +681,17 @@ export * from "./strings"; // Već uključeno
 export const ROUTES = {
   LOGIN: "login",
   REGISTER: "register",
+  VERIFY: "verify",
   TABS: "(tabs)",
   TERMS: "terms",
   PRIVACY: "privacy",
 } as const;
 
-export const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.TERMS, ROUTES.PRIVACY];
-export const AUTH_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER];
+export const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.VERIFY, ROUTES.TERMS, ROUTES.PRIVACY];
+export const AUTH_ROUTES = [ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.VERIFY];
 ```
+
+**Napomena:** Tab rute (`index`, `lost`, `create`, `found`, `profile`) se koriste direktno kao stringovi u `app/(tabs)/_layout.tsx` - nisu definisane kao konstante jer su iste kao imena fajlova.
 
 ### useAuthGuard Hook (src/hooks/useAuthGuard.ts)
 
@@ -839,6 +853,91 @@ Potvrđeno?
             ↓
           RootLayoutNav: router.replace('/login')
 ```
+
+---
+
+## Tab Navigacija
+
+### Struktura Tabova
+
+```
+┌─────────────────────────────────────────┐
+│  🏠      📦      ➕      🔍      👤    │
+│ Home    Lost   Create  Found  Profile  │
+└─────────────────────────────────────────┘
+```
+
+### Tab Layout (app/(tabs)/_layout.tsx)
+
+```tsx
+import { Tabs } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { HapticTab } from "../../src/components/expo";
+import { Colors } from "../../src/constants/theme";
+import { TAB_STRINGS } from "../../src/constants/strings";
+import { ICON_SIZES } from "../../src/constants/sizes";
+import { useColorScheme } from "../../src/hooks/useColorScheme";
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: colors.tabIconSelected,
+        tabBarInactiveTintColor: colors.tabIconDefault,
+        headerShown: false,
+        tabBarButton: HapticTab,
+        tabBarStyle: {
+          height: 70 + insets.bottom,
+          paddingTop: 10,
+          paddingBottom: insets.bottom + 10,
+        },
+      }}
+    >
+      <Tabs.Screen name="index" options={{ title: TAB_STRINGS.HOME, /* ... */ }} />
+      <Tabs.Screen name="lost" options={{ title: TAB_STRINGS.LOST, /* ... */ }} />
+      <Tabs.Screen name="create" options={{ title: TAB_STRINGS.CREATE, /* ... */ }} />
+      <Tabs.Screen name="found" options={{ title: TAB_STRINGS.FOUND, /* ... */ }} />
+      <Tabs.Screen name="profile" options={{ title: TAB_STRINGS.PROFILE, /* ... */ }} />
+    </Tabs>
+  );
+}
+```
+
+### Tab Screen Šablon
+
+Svaki tab ekran koristi `CurvedHeader` za konzistentan izgled:
+
+```tsx
+import { View, Text } from "react-native";
+
+import { CurvedHeader } from "../../src/components/ui";
+import { TAB_STRINGS } from "../../src/constants/strings";
+
+export default function HomeScreen() {
+  return (
+    <View className="flex-1 bg-background">
+      <CurvedHeader size="sm">
+        <Text className="text-2xl font-bold text-white">{TAB_STRINGS.HOME}</Text>
+      </CurvedHeader>
+      <View className="flex-1 items-center justify-center p-4">
+        {/* Sadržaj ekrana */}
+      </View>
+    </View>
+  );
+}
+```
+
+### Dodavanje Novog Taba
+
+1. Kreiraj fajl `app/(tabs)/novi-tab.tsx`
+2. Dodaj string u `TAB_STRINGS` (`src/constants/strings.ts`)
+3. Dodaj `<Tabs.Screen>` u `app/(tabs)/_layout.tsx`
 
 ---
 
