@@ -98,3 +98,23 @@ export const HOME_STRINGS = {
   FOUND_TITLE: "I found something!",
   FOUND_SUBTITLE: "I want to report it",
 } as const;
+
+export const REPORT_STRINGS = {
+  STATUS_ACTIVE: "Active",
+  STATUS_RESOLVED: "Resolved",
+  STATUS_EXPIRED: "Expired",
+  STATUS_FLAGGED: "Flagged",
+
+  CATEGORY_LABEL: "Category",
+  LOCATION_LABEL: "Location",
+  POSTED_LABEL: "Posted",
+  NO_LOCATION: "Location not specified",
+
+  TODAY: "Today",
+  YESTERDAY: "Yesterday",
+  DAYS_AGO: "days ago",
+
+  NO_REPORTS: "No reports found",
+  NO_LOST_ITEMS: "No lost items reported yet",
+  NO_FOUND_ITEMS: "No found items reported yet",
+} as const;

@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, RefreshControl } from "react-native";
+import { View, Text, RefreshControl, FlatList } from "react-native";
 
-import { CurvedHeader } from "../../src/components/ui";
-import { TAB_STRINGS, COMMON_STRINGS } from "../../src/constants/strings";
+import { CurvedHeader, ReportCard } from "../../src/components/ui";
+import { TAB_STRINGS } from "../../src/constants/strings";
 import { useReports } from "../../src/hooks/useReports";
 import { ReportType } from "@lost-and-found/api";
 
@@ -10,32 +10,41 @@ export default function FoundScreen() {
     { type: ReportType.FOUND },
   );
 
+  const handleReportPress = (reportId: number) => {
+    console.log("Report pressed:", reportId);
+  };
+
+  const renderEmptyState = () => (
+    <View className="flex-1 items-center justify-center">
+      <Text className="text-text-muted">No found items reported yet.</Text>
+    </View>
+  );
+
   return (
     <View className="flex-1 bg-background">
       <CurvedHeader title={TAB_STRINGS.FOUND} size="sm" />
 
-      <ScrollView
-        className="flex-1 p-4"
-        refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-        }
-      >
-        {isLoading && (
-          <Text className="text-text-muted">{COMMON_STRINGS.LOADING}</Text>
-        )}
+      <View className="flex-1 p-4">
+        {isLoading && <Text className="text-text-muted">Loading...</Text>}
 
-        {isError && (
-          <Text className="text-error">
-            {error?.message ?? COMMON_STRINGS.ERROR_GENERIC}
-          </Text>
+        {isError && error && (
+          <Text className="text-error">Error: {error.message}</Text>
         )}
 
         {data && (
-          <Text className="text-text font-mono text-xs">
-            {JSON.stringify(data, null, 2)}
-          </Text>
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.id!.toString()}
+            refreshControl={
+              <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+            }
+            renderItem={({ item }) => (
+              <ReportCard report={item} onPress={handleReportPress} />
+            )}
+            ListEmptyComponent={renderEmptyState}
+          />
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 }
