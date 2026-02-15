@@ -34,7 +34,7 @@ export default function FoundScreen() {
         {data && (
           <FlatList
             data={data}
-            keyExtractor={(item) => item.id!.toString()}
+            keyExtractor={(item) => item.id.toString()}
             refreshControl={
               <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
             }

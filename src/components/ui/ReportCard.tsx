@@ -65,12 +65,12 @@ const STATUS_CONFIG: Record<
 };
 
 export function ReportCard({ report, onPress }: ReportCardProps) {
-  const typeConfig = TYPE_CONFIG[report.type ?? ReportType.LOST];
-  const statusConfig = STATUS_CONFIG[report.status ?? ReportStatus.ACTIVE];
+  const typeConfig = TYPE_CONFIG[report.type];
+  const statusConfig = STATUS_CONFIG[report.status];
 
   return (
     <Pressable
-      onPress={() => onPress(report.id!)}
+      onPress={() => onPress(report.id)}
       className="bg-card rounded-xl p-4 border border-border mb-3"
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       accessibilityRole="button"
@@ -84,7 +84,7 @@ export function ReportCard({ report, onPress }: ReportCardProps) {
         </View>
         <View className={`px-2 py-1 rounded-full ${typeConfig.badgeBg}`}>
           <Text className={`text-xs font-medium ${typeConfig.badgeText}`}>
-            {report.type === "LOST" ? "Lost" : "Found"}
+            {report.type === ReportType.LOST ? "Lost" : "Found"}
           </Text>
         </View>
       </View>

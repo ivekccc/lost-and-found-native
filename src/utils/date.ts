@@ -1,6 +1,6 @@
 import { REPORT_STRINGS } from "../constants";
 
-export function formatDate(date: Date | string | undefined): string {
+export function formatDate(date: Date | string): string {
   if (!date) return "";
 
   const dateObj = typeof date === "string" ? new Date(date) : date;
