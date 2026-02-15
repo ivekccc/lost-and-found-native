@@ -1110,3 +1110,137 @@ ICON_SIZES.xl  // 40
 10. **Veličine ikona** - Koristi `ICON_SIZES` iz constants, ne hardcoded brojeve
 11. **Component sizes** - Koristi `ComponentSize` tip za size props
 12. **Form loading state** - UVEK koristi `formState.isSubmitting`, NIKAD ručni `useState` za loading. Sve form komponente imaju `disabled` prop koji treba povezati sa `formState.isSubmitting`
+13. **Liste** - Koristi `FlatList` umesto `ScrollView` za liste (virtualization, performance)
+
+---
+
+## Reports Feature
+
+### API Modul (src/api/reports.api.ts)
+
+```typescript
+import http from "./http";
+import { ReportListDTO, ReportDetailsDTO, ReportType } from "@lost-and-found/api";
+
+export interface ReportParams {
+  type?: ReportType;
+}
+
+export const reportsApi = {
+  getReports: (params?: ReportParams) =>
+    http.get<ReportListDTO[]>("/reports", { params }),
+  getReportById: (id: number) =>
+    http.get<ReportDetailsDTO>(`/reports/${id}`),
+};
+```
+
+### React Query Hook (src/hooks/useReports.ts)
+
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { reportsApi, ReportParams } from "../api/reports.api";
+
+export function useReports(params?: ReportParams) {
+  return useQuery({
+    queryKey: ["reports", params],
+    queryFn: () => reportsApi.getReports(params).then((res) => res.data),
+  });
+}
+```
+
+### Korišćenje u komponenti
+
+```typescript
+const { data, isLoading, isError, refetch, isRefetching } = useReports({
+  type: ReportType.LOST,
+});
+```
+
+---
+
+## ReportCard Komponenta
+
+Komponenta za prikaz pojedinačnog reporta u listi.
+
+**Lokacija:** `src/components/ui/ReportCard.tsx`
+
+### Props
+
+```typescript
+interface ReportCardProps {
+  report: ReportListDTO;
+  onPress: (report: ReportListDTO) => void;
+}
+```
+
+### Korišćenje
+
+```tsx
+<FlatList
+  data={data}
+  keyExtractor={(item) => String(item.id)}
+  renderItem={({ item }) => (
+    <ReportCard report={item} onPress={handleReportPress} />
+  )}
+  contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+  refreshControl={
+    <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+  }
+  ListEmptyComponent={renderEmptyState}
+/>
+```
+
+### Features
+
+- Ikona kategorije (mapirana iz categoryName)
+- Type badge (LOST = primary, FOUND = success)
+- Status badge (prikazuje se samo ako nije ACTIVE)
+- Lokacija i datum
+- Press feedback sa opacity
+
+**VAŽNO:** Koristi `FlatList`, NE `ScrollView` za liste - sprečava "VirtualizedLists nested" error.
+
+---
+
+## Ekrani Status
+
+| Ekran | Status | Opis |
+|-------|--------|------|
+| Login | ✅ Gotovo | Email/password forma |
+| Register | ✅ Gotovo | Sa terms checkbox |
+| Verify | ✅ Gotovo | 6-digit kod + countdown |
+| Home | ✅ Gotovo | ActionCards za Lost/Found |
+| Lost | ✅ Gotovo | FlatList sa ReportCard |
+| Found | ✅ Gotovo | FlatList sa ReportCard |
+| Create | 🚧 TODO | Forma za kreiranje prijave |
+| Profile | 🚧 TODO | User info + logout |
+
+---
+
+## Helpers
+
+### Date Formatting (src/utils/date.ts)
+
+```typescript
+import { formatRelativeDate } from "../utils";
+
+formatRelativeDate(report.createdAt); // "Today", "Yesterday", "3 days ago"
+```
+
+---
+
+## Stringovi za Reports (src/constants/strings.ts)
+
+```typescript
+export const REPORT_STRINGS = {
+  STATUS_ACTIVE: "Active",
+  STATUS_RESOLVED: "Resolved",
+  STATUS_EXPIRED: "Expired",
+  NO_LOCATION: "Location not specified",
+  NO_LOST_ITEMS: "No lost items reported yet",
+  NO_FOUND_ITEMS: "No found items reported yet",
+  TODAY: "Today",
+  YESTERDAY: "Yesterday",
+  DAYS_AGO: "days ago",
+} as const;
+```
